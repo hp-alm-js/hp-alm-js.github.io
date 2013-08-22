@@ -12,7 +12,7 @@ ALM.config("https://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
 $('#logged_in').hide();
 
 function showLogin () {
-ALM.showLoginForm($('#login_form'), function(username) {
+ALM.showLoginForm($('#login_frame'), function(username) {
     $('#logged_in_username').html(username);
     $('#login_form').hide();
     $('#logged_in').show();
@@ -69,8 +69,11 @@ $('#logout').bind('click', function() {
   </div>
 </div>
 
-<iframe id="login_form">
+<div id="login_form">
+<p><a href="https://chrome.google.com/webstore/detail/hp-alm-x-origin/gmbcjecoodejecknipdaeegfhoplcgep?hl=en-US">Install extension (required)</a></p>
+<iframe id="login_frame">
 </iframe>
+</div>
 
 <div id="container"></div>
 </body>

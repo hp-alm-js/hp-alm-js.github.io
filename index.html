@@ -29,9 +29,18 @@ function showDefects(query) {
         var defects_html = $('#container').html("");
         defects.map(function(defect) {
             console.log(defect);
-                defects_html.append(defect.id + " " + defect.name + "<br/>" +
-                                    defect.description + "<br/>" +
-                                    defect["dev-comments"] + "<br/>");
+            defects_html.append("<hr/>" + defect.id + " " + defect.name + "<br/>" +
+                                defect.description + "<br/>" +
+                                defect["dev-comments"] + "<br/>");
+            if (defect.attachment == "Y") {
+                defects_html.append("<hr/>Attachments:<br/>");
+                ALM.getDefectAttachments(defect.id, function onSuccess(attachments) {
+                    attachments.map(function(attachment) {
+                        defects_html.append('<li><a href="' + attachment.url + '" download>' + 
+                                            attachment.name + '</a></li>');
+                    })
+                });
+            }
         });
     }, function onError() {}, query);
 }
@@ -76,6 +85,7 @@ $('#logout').bind('click', function() {
 <iframe id="login_frame">
 </iframe>
 </div>
+
 
 </body>
 </html>

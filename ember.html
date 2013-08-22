@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HP ALM Web UI</title>
+  </head>
+  <body>
+    <script type="text/x-handlebars" data-template-name="application">
+        {{#if currentUser}}
+        <div id="logged_in">
+          <button id="my_defects">My defects</button>
+          <button id="team_defects">High priority team defects (SLOW)</button>
+          <div style="float:right">
+            Logged in as <span id="logged_in_username">{{currentUser}}</span>
+            <button id="logout">Logout</button>
+          </div>
+          <div id="container">
+              {{outlet}}
+          </div>
+        </div>
+        {{else}}
+        <div id="logged_out">
+            <iframe id="login_frame" src="{{unbound loginUrl}}">
+            </iframe>
+        </div>
+        {{/if}}
+    </script>
+    <script type="text/x-handlebars" data-template-name="defects">
+          {{#each controller}}
+            {{id}}: {{title}}<br/>
+            Defect Description<br/>
+            Defect Comments</br>
+            Defect Attachments</br>
+          {{/each}}
+    </script>
+    <script src="hp-alm.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.10.1.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js">
+    </script>
+    <script src="https://jquery-xml2json-plugin.googlecode.com/svn/trunk/jquery.xml2json.js">
+    </script>
+    <script src="http://builds.emberjs.com/ember-1.0.0-rc.7.js"></script>
+    <script src="http://builds.emberjs.com/ember-data-0.13.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/models/store.js"></script>
+    <script src="js/models/defect.js"></script>
+  </body>
+</html>

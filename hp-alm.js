@@ -12,42 +12,49 @@ ALM.config = function(apiUrl, domain, project) {
     PROJECT = project;
 }
 
-ALM.ajax = function ajax(path, onSuccess, onError) {
+ALM.onResponse = function onResponse(response, cb, errCb) {
+    var jsonResponse;
+    try {
+        jsonResponse = $.xml2json(response);
+    }
+    catch(err) {
+        if (errCb) {
+            errCb(err)
+        }
+    }
+    if (jsonResponse) {
+        cb(jsonResponse);
+    }
+}
+
+ALM.ajax = function ajax(path, onSuccess, onError, type, data) {
     $.ajax(API_URL + path, {
         success: function (response) {
-            var response;
-            try {
-                response = $.xml2json(response);
-            }
-            catch(err) {
-                if (onError) {
-                    onError(err)
-                }
-            }
-            if (response) { 
-                onSuccess(response);
-            }
+            ALM.onResponse(response, onSuccess, onError);
         },
         error: onError,
         xhrFields: {
             withCredentials: true
-        }
+        },
+        type: type,
+        data: data
     });
 };
 
-ALM.showLoginForm = function showLoginForm(loginForm, onLogin, onError) {
-    loginForm.attr('src', API_URL + 'rest/is-authenticated?login-form-required=y');
-    loginForm.load(function(ev) {
-        tryLogin(onLogin, onError);
+ALM.login = function (username, password, onSuccess, onError) {
+    ALM.ajax('authentication-point/j_spring_security_check', onSuccess, onError, 'POST', {
+        'j_username': username,
+        'j_password': password
     });
-    function tryLogin(onLogin, onError) {
-        ALM.ajax("rest/is-authenticated?login-form-required=y", function(response) {
-            onLogin(response.Username);
-        },
-        function(err) {
-            onError(err);
-        });
-    }
+}
+
+ALM.tryLogin = function tryLogin(onLogin, onError) {
+    ALM.ajax("rest/is-authenticated?login-form-required=y", function(response) {
+        onLogin(response.Username);
+    },
+    function(err) {
+        onError(err);
+    });
 }
 
 ALM.logout = function logout(cb) {

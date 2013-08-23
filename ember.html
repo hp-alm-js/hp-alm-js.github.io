@@ -5,6 +5,18 @@
     <title>HP ALM Web UI</title>
   </head>
   <body>
+    <!-- to be able to save password in a browser,
+         we are not using template here -->
+    <div id="login_container">
+      <form id="login_form" action="empty.html" target="empty">
+        <input id="username" type="text" name="username">
+        <input id="password" type="password" name="password">
+        <button type="submit">Login</button>
+      </form>
+      <div id="login_error" hidden>Login error</div>
+      <iframe src="empty.html" id="empty" hidden></iframe>
+    </div>
+
     <script type="text/x-handlebars" data-template-name="application">
         {{#if currentUser}}
         <div id="logged_in">
@@ -12,16 +24,11 @@
           <button id="team_defects">High priority team defects (SLOW)</button>
           <div style="float:right">
             Logged in as <span id="logged_in_username">{{currentUser}}</span>
-            <button id="logout">Logout</button>
+            <button id="logout" {{action logout}}>Logout</button>
           </div>
           <div id="container">
               {{outlet}}
           </div>
-        </div>
-        {{else}}
-        <div id="logged_out">
-            <iframe id="login_frame" src="{{unbound loginUrl}}">
-            </iframe>
         </div>
         {{/if}}
     </script>

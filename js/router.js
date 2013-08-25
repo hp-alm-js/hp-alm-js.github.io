@@ -1,5 +1,6 @@
 AlmUi.Router.map(function () {
   this.resource('application');
+  this.resource('hello', { path: '/' });
   this.resource('defects', { path: '/defects' });
 });
 

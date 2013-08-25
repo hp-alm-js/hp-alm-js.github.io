@@ -10,29 +10,17 @@
     <link href="signin.css" rel="stylesheet">
 
     <title>HP ALM Web UI</title>
+    <style>
+      .container {
+        max-width: 700px;
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <script type="text/x-handlebars" data-template-name="application">
-          {{#if currentUser}}
-          <div id="logged_in">
-            <button id="my_defects">My defects</button>
-            <button id="team_defects">High priority team defects (SLOW)</button>
-            <div style="float:right">
-              Logged in as <span id="logged_in_username">{{currentUser}}</span>
-              <button class="btn btn-default" id="logout" {{action logout}}>Logout</button>
-            </div>
-            <div id="container">
-                {{outlet}}
-            </div>
-          </div>
-          {{/if}}
-      </script>
 
       <!-- to be able to save password in a browser,
            we are not using template here -->
-      <div id="login_container">
-
+    <div id="login_container" style="display:none">
         <form class="form-signin" role="form" id="login_form" action="empty.html" target="empty">
           <h2 class="form-signin-heading">Please sign in</h2>
           <input class="form-control" id="username" type="text" placeholder="Username" name="username">
@@ -48,11 +36,48 @@
           </div>
           <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
         </form>
-
         <iframe src="empty.html" id="empty" hidden></iframe>
-      </div>
     </div>
 
+      <script type="text/x-handlebars" data-template-name="application">
+        {{#if currentUser}}
+          <div class="navbar">
+            <div class="container">
+              <ul class="nav nav-pills pull-right">
+
+                <li><a href="#" id="my_defects">My defects</a></li>
+                <li><a href="#" {{action team_defects}}>High priority team defects (SLOW)</a></li>
+                <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="logged_in_username">{{currentUser}}</span><b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#" id="logout" {{action logout}}>Logout</a></li>
+                </ul>
+                </li>
+              </ul>
+
+            </div>
+          </div>
+          <div class="container">
+            {{outlet}}
+          </div>
+          <div class="container">
+            <div class="footer">
+              <hr/>
+              <p>Fork me <a href="https://github.com/hp-alm-js/hp-alm-web-ui">@GitHub</a></p>
+	          </div>
+          </div>
+        {{/if}}
+      </script>
+
+    <script type="text/x-handlebars" data-template-name="hello">
+    <div class="jumbotron">
+    <h1>Hi, team!</h1>
+    <p>This app was inspired by the need to quickly view and edit defects in our internal HP ALM instance.</p>
+    <p>No, you can't edit defects (yet).</p>
+    <p>It is meant to be highly tailored to our needs.</p>
+    <p> It is largely experimental and needs some dirty workarounds to work
+    (like the cross origin extension you've installed).</p>
+    </div>
+    </script>
     <script type="text/x-handlebars" data-template-name="defects">
           {{#each controller}}
             {{id}}: {{title}}<br/>

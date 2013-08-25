@@ -2,36 +2,57 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-1.10.1.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="signin.css" rel="stylesheet">
+
     <title>HP ALM Web UI</title>
   </head>
   <body>
-    <!-- to be able to save password in a browser,
-         we are not using template here -->
-    <div id="login_container">
-      <form id="login_form" action="empty.html" target="empty">
-        <input id="username" type="text" name="username">
-        <input id="password" type="password" name="password">
-        <button type="submit">Login</button>
-      </form>
-      <div id="login_error" hidden>Login error</div>
-      <iframe src="empty.html" id="empty" hidden></iframe>
+    <div class="container">
+      <script type="text/x-handlebars" data-template-name="application">
+          {{#if currentUser}}
+          <div id="logged_in">
+            <button id="my_defects">My defects</button>
+            <button id="team_defects">High priority team defects (SLOW)</button>
+            <div style="float:right">
+              Logged in as <span id="logged_in_username">{{currentUser}}</span>
+              <button class="btn btn-default" id="logout" {{action logout}}>Logout</button>
+            </div>
+            <div id="container">
+                {{outlet}}
+            </div>
+          </div>
+          {{/if}}
+      </script>
+
+      <!-- to be able to save password in a browser,
+           we are not using template here -->
+      <div id="login_container">
+
+        <form class="form-signin" role="form" id="login_form" action="empty.html" target="empty">
+          <h2 class="form-signin-heading">Please sign in</h2>
+          <input class="form-control" id="username" type="text" placeholder="Username" name="username">
+          <input class="form-control" id="password" type="password" placeholder="Password" name="password">
+          <div class="alert alert-danger" id="login_error" hidden>
+            <p><strong>Login error!</strong><br/>
+              Make sure you've installed <a href="https://chrome.google.com/webstore/detail/hp-alm-x-origin/gmbcjecoodejecknipdaeegfhoplcgep?hl=en-US">
+              this extension</a> (enables cross origin requests). Alas, only Chrome is supported.<br/>
+              Make sure <a href="https://qc2d.atlanta.hp.com/qcbin/rest/is-authenticated?login-form-required=y">this website</a>
+              is available (accept self-signed certificate if needed).<br/>
+              Make sure to use "_" in place of "@" in your email.
+            </p>
+          </div>
+          <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
+        </form>
+
+        <iframe src="empty.html" id="empty" hidden></iframe>
+      </div>
     </div>
 
-    <script type="text/x-handlebars" data-template-name="application">
-        {{#if currentUser}}
-        <div id="logged_in">
-          <button id="my_defects">My defects</button>
-          <button id="team_defects">High priority team defects (SLOW)</button>
-          <div style="float:right">
-            Logged in as <span id="logged_in_username">{{currentUser}}</span>
-            <button id="logout" {{action logout}}>Logout</button>
-          </div>
-          <div id="container">
-              {{outlet}}
-          </div>
-        </div>
-        {{/if}}
-    </script>
     <script type="text/x-handlebars" data-template-name="defects">
           {{#each controller}}
             {{id}}: {{title}}<br/>
@@ -42,7 +63,6 @@
     </script>
     <script src="hp-alm.js"></script>
 
-    <script src="https://code.jquery.com/jquery-1.10.1.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js">
     </script>
     <script src="https://jquery-xml2json-plugin.googlecode.com/svn/trunk/jquery.xml2json.js">

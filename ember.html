@@ -45,11 +45,11 @@
             <div class="container">
               <ul class="nav nav-pills pull-right">
 
-                <li><a href="#" id="my_defects">My defects</a></li>
-                <li><a href="#" {{action team_defects}}>High priority team defects (SLOW)</a></li>
+                <li>{{#linkTo 'defects'}}My defects{{/linkTo}}</li>
+                <li>{{#linkTo 'defects'}}High priority team defects (SLOW){{/linkTo}}</li>
                 <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="logged_in_username">{{currentUser}}</span><b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#" id="logout" {{action logout}}>Logout</a></li>
+                  <li><a {{action logout}}>Logout</a></li>
                 </ul>
                 </li>
               </ul>

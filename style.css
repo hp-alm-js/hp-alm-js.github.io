@@ -1,0 +1,17 @@
+div.box {
+  border-radius: 4px;
+  border: 1px solid #ADD9FF;
+  padding: 40px 20px 20px 20px;
+  position: relative;
+  margin-bottom: 1em;
+}
+div.box-label {
+  background: #ADD9FF;
+  border-bottom-right-radius: 4px;
+  border-right: 1px solid #ADD9FF;
+  border-bottom: 1px solid #ADD9FF;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 4px;
+}

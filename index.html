@@ -8,11 +8,12 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="signin.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
 
     <title>HP ALM Web UI</title>
     <style>
       .container {
-        max-width: 700px;
+        max-width: 750px;
       }
     </style>
   </head>
@@ -83,7 +84,7 @@
     <script type="text/x-handlebars" data-template-name="defects">
           {{outlet}}
           {{#each defect in controller}}
-            {{#linkTo "defect" defect}}{{defect.id}}: {{defect.title}}{{/linkTo}}<br/>
+            {{#linkTo "defect" defect}}{{defect.id}}: {{defect.name}}{{/linkTo}}<br/>
           {{/each}}
     </script>
     <script type="text/x-handlebars" data-template-name="defects/my">
@@ -93,11 +94,9 @@
           <h1>Team defects</h1>
     </script>
     <script type="text/x-handlebars" data-template-name="defect">
-            <h1>#{{id}} {{title}}</h1>
-            <hr/>
-            <p>{{description}}</p>
-            <hr/>
-            <p>{{comments}}</p>
+            <h4>#{{id}} {{name}}</h4>
+            <div class="box"><div class="box-label">Description</div>{{{description}}}</div>
+            <div class="box"><div class="box-label">Comments</div>{{{dev-comments}}}</div>
             <!--Defect Attachments</br-->
     </script>
 

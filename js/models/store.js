@@ -20,7 +20,7 @@ AlmUi.AlmAdapter = DS.Adapter.extend({
   },
   find: function(store, type, id) {
     var that = this;
-    var queryString = 'id[' + id + ']';
+    var queryString = 'id["' + id + '"]';
     ALM.getDefects(function onSuccess(defects) {
       that.didFindRecord(store, type, {'defect': defects[0]}, id);
     }, function onError() {console.log('error')}, queryString);
@@ -29,7 +29,8 @@ AlmUi.AlmAdapter = DS.Adapter.extend({
     var that = this,
         queryString = "";
     for (property in query.query) {
-      queryString += property + "[" + query.query[property].join(' or ') + "];";
+      queryString += property + '["' +
+                     query.query[property].join('" or "') + '"];';
     }
     ALM.getDefects(function onSuccess(defects, totalCount) {
       that.didFindQuery(store, type, {'defects': defects}, array);

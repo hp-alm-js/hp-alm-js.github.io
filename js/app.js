@@ -19,7 +19,7 @@ AlmUi.ApplicationController = Ember.Controller.extend({
       } else {
         ALM.tryLogin(function onLogin(username) {
           that.set("currentUser", username);
-          $('#login_form').hide();
+          $('#login_container').hide();
           $('#login_error').hide();
           resolve(username);
         }, function onError() {

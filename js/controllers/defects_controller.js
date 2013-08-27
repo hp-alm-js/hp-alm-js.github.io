@@ -13,10 +13,4 @@ AlmUi.DefectsMyController = AlmUi.DefectsController.extend({
   }
 });
 
-AlmUi.DefectsTeamController = AlmUi.DefectsController.extend({
-  model: function() {
-    // TODO find a way to remove this hard-coded team name
-    var query = { "user-95": ["DDM Content"], status: ['Open', 'New'], severity: ["2 - High", "1 - Urgent"] };
-    return AlmUi.Defect.find({query: query});
-  }
-});
+AlmUi.DefectsTeamController = Em.ArrayController;

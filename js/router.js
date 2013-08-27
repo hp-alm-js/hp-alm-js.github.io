@@ -21,12 +21,18 @@ AlmUi.AuthRoute = Em.Route.extend({
     });
   },
   setupWithAuth: function(controller, model) {
-      controller.send('fetch');
+      return controller.send('fetch');
   }
 
 });
 
+AlmUi.LoadingRoute = Em.Route.extend({});
 AlmUi.HelloRoute = AlmUi.AuthRoute;
 AlmUi.DefectsMyRoute = AlmUi.AuthRoute;
-AlmUi.DefectsTeamRoute = AlmUi.AuthRoute;
-
+AlmUi.DefectsTeamRoute = Em.Route.extend({
+  model: function() {
+    // TODO find a way to remove this hard-coded team name
+    var query = { "user-95": ["DDM Content"], status: ['Open', 'New'], severity: ["2 - High", "1 - Urgent"] };
+    return AlmUi.Defect.find({query: query});
+  }
+});

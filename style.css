@@ -15,3 +15,15 @@ div.box-label {
   left: 0;
   padding: 4px;
 }
+div.loading {
+  border-radius: 10px;
+  opacity: 0.4;
+  background: #ccc;
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  text-align: center;
+  vertical-align: middle;
+  font-size: x-large;
+  padding: 1em;
+}

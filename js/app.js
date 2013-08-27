@@ -9,20 +9,33 @@ Ember.Application.initializer({
 
 AlmUi.ApplicationController = Ember.Controller.extend({
   currentUser: null,
-  loginUrl: null,
   checkLogin: function() {
     var that = this;
-    ALM.tryLogin(function onLogin(username) {
-      that.set("currentUser", username);
-      $('#login_form').hide();
-      $('#login_error').hide();
-    }, function onError() {
+
+    var checkLoginPromise = new Ember.RSVP.Promise(function(resolve, reject){
+      var promise = this;
+      if (that.get('currentUser')) {
+        resolve(username);
+      } else {
+        ALM.tryLogin(function onLogin(username) {
+          that.set("currentUser", username);
+          $('#login_form').hide();
+          $('#login_error').hide();
+          resolve(username);
+        }, function onError() {
+          console.log('eeee')
+          that.set("currentUser", null);
+          $('#login_container').css('display', 'block');
+          reject(null);
+        });
+      }
     });
+    return checkLoginPromise;
   },
   login: function(form, username, password) {
     var that = this;
     ALM.login(username, password, function onLogin() {
-      that.checkLogin();
+      that.checkLogin().then(function() {});
     }, function onError() {
       $('#login_error').show();
     });
@@ -49,6 +62,6 @@ AlmUi.ApplicationView = Ember.View.extend({
       form[0].submit(); // submit to hidden frame
       that.get("controller").login(form, username, password);
     });
-    that.get("controller").checkLogin();
+    that.get("controller").checkLogin().then();
   }
 });

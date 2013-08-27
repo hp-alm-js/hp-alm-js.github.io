@@ -20,7 +20,7 @@
 
       <!-- to be able to save password in a browser,
            we are not using template here -->
-    <div id="login_container" style="display:none">
+    <div id="login_container">
         <form class="form-signin" role="form" id="login_form" action="empty.html" target="empty">
           <h2 class="form-signin-heading">Please sign in</h2>
           <input class="form-control" id="username" type="text" placeholder="Username" name="username">
@@ -44,16 +44,18 @@
           <div class="navbar">
             <div class="container">
               <ul class="nav nav-pills pull-right">
-
-                <li>{{#linkTo 'defects'}}My defects{{/linkTo}}</li>
-                <li>{{#linkTo 'defects'}}High priority team defects (SLOW){{/linkTo}}</li>
+                {{#linkTo "defects.my" activeClass="active" tagName="li" href=false}}
+                  {{#linkTo "defects.my"}}My defects{{/linkTo}}
+                {{/linkTo}}
+                {{#linkTo "defects.team" activeClass="active" tagName="li" href=false}}
+                  {{#linkTo "defects.team"}}High priority team defects (SLOW){{/linkTo}}
+                {{/linkTo}}
                 <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="logged_in_username">{{currentUser}}</span><b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a {{action logout}}>Logout</a></li>
                 </ul>
                 </li>
               </ul>
-
             </div>
           </div>
           <div class="container">
@@ -79,13 +81,27 @@
     </div>
     </script>
     <script type="text/x-handlebars" data-template-name="defects">
-          {{#each controller}}
-            {{id}}: {{title}}<br/>
-            Defect Description<br/>
-            Defect Comments</br>
-            Defect Attachments</br>
+          {{outlet}}
+          {{#each defect in controller}}
+            {{#linkTo "defect" defect}}{{defect.id}}: {{defect.title}}{{/linkTo}}<br/>
           {{/each}}
     </script>
+    <script type="text/x-handlebars" data-template-name="defects/my">
+          <h1>My defects</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="defects/team">
+          <h1>Team defects</h1>
+    </script>
+    <script type="text/x-handlebars" data-template-name="defect">
+            <h1>#{{id}} {{title}}</h1>
+            <hr/>
+            <p>{{description}}</p>
+            <hr/>
+            <p>{{comments}}</p>
+            <!--Defect Attachments</br-->
+    </script>
+
+
     <script src="hp-alm.js"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js">
@@ -99,5 +115,6 @@
     <script src="js/router.js"></script>
     <script src="js/models/store.js"></script>
     <script src="js/models/defect.js"></script>
+    <script src="js/controllers/defects_controller.js"></script>
   </body>
 </html>

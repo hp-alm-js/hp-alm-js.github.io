@@ -1,7 +1,10 @@
 AlmUi.Defect = DS.Model.extend({
   name: DS.attr('string'),
   description: DS.attr('string'),
-  "dev-comments": DS.attr('string')
+  "dev-comments": DS.attr('string'),
+  "detection-version": DS.attr('string'),
+  "detected-in-rel": DS.attr('string'),
+  "creation-time": DS.attr('string')
 });
 
 

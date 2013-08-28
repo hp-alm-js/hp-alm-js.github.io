@@ -19,7 +19,7 @@ ALM.onResponse = function onResponse(response, cb, errCb) {
     }
     catch(err) {
         if (errCb) {
-            errCb(err)
+            errCb("error during parsing xml:" + err)
         }
     }
     if (jsonResponse) {
@@ -88,8 +88,10 @@ ALM.getDefectAttachments = function getDefectAttachments(defectId, cb, errCb) {
     });
 }
 
-ALM.getDefects = function getDefects(cb, errCb, query) {
-    var fields = ["id","name","description","dev-comments","severity","attachment"];
+ALM.getDefects = function getDefects(cb, errCb, query, fields) {
+    if (!fields) {
+        fields = ["id","name","description","dev-comments","severity","attachment"];
+    }
     var fieldsParam = "fields="+ fields.join(",") + "&";
     var queryParam = "query={" + query + "}&";
     var path = "rest/domains/" + DOMAIN +

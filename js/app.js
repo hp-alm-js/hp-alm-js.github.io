@@ -22,8 +22,8 @@ AlmUi.ApplicationController = Ember.Controller.extend({
           $('#login_container').hide();
           $('#login_error').hide();
           resolve(username);
-        }, function onError() {
-          console.log('eeee')
+        }, function onError(error) {
+          console.log(error);
           that.set("currentUser", null);
           $('#login_container').css('display', 'block');
           reject(null);

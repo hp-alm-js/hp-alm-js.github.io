@@ -28,11 +28,13 @@
           <input class="form-control" id="password" type="password" placeholder="Password" name="password">
           <div class="alert alert-danger" id="login_error" hidden>
             <p><strong>Login error!</strong><br/>
-              Make sure you've installed <a href="https://chrome.google.com/webstore/detail/hp-alm-x-origin/gmbcjecoodejecknipdaeegfhoplcgep?hl=en-US">
-              this extension</a> (enables cross origin requests). Alas, only Chrome is supported.<br/>
-              Make sure <a href="https://qc2d.atlanta.hp.com/qcbin/rest/is-authenticated?login-form-required=y">this website</a>
-              is available (accept self-signed certificate if needed).<br/>
-              Make sure to use "_" in place of "@" in your email.
+              <li>Make sure you've installed <a href="https://chrome.google.com/webstore/detail/hp-alm-x-origin/gmbcjecoodejecknipdaeegfhoplcgep?hl=en-US">
+              this extension</a> (enables cross origin requests). Alas, only Chrome is supported.<br/></li>
+              <li>Make sure <a href="https://qc2d.atlanta.hp.com/qcbin/rest/is-authenticated?login-form-required=y">this website</a>
+              is available (accept self-signed certificate if needed).</li>
+              <li>Make sure to use "_" in place of "@" in your email.</li>
+              <li>If you're using the "Block third-party cookies" feature, add "qc2d.atlanta.hp.com" to exceptions.</li>
+              </ul>
             </p>
           </div>
           <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>

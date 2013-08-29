@@ -1,5 +1,6 @@
 AlmUi.Router.map(function () {
   this.resource('application');
+  this.resource('users');
   this.resource('hello', { path: '/' });
   this.resource("defect", { path: "/defect/:defect_id" });
   this.resource("defects", { path: "/defects/" }, function(){
@@ -10,6 +11,9 @@ AlmUi.Router.map(function () {
 
 AlmUi.ApplicationRoute = Em.Route.extend({
   model: function () {
+  },
+  setupController: function(){
+    this.controllerFor('users').set('model', AlmUi.User.find());
   }
 });
 
@@ -29,6 +33,12 @@ AlmUi.AuthRoute = Em.Route.extend({
 AlmUi.LoadingRoute = Em.Route.extend({});
 AlmUi.HelloRoute = AlmUi.AuthRoute;
 AlmUi.DefectsMyRoute = AlmUi.AuthRoute;
+AlmUi.UsersRoute = AlmUi.AuthRoute.extend({
+  setupWithAuth: function(c, m) {
+    console.log('adaf')
+    c.set('model', AlmUi.User.find());
+  }
+});
 AlmUi.DefectsTeamRoute = Em.Route.extend({
   model: function() {
     // TODO find a way to remove this hard-coded team name

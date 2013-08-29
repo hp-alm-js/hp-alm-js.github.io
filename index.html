@@ -101,7 +101,19 @@
             <div class="box"><div class="box-label">Description</div>{{{description}}}</div>
             <div class="box"><div class="box-label">Comments</div>{{{dev-comments}}}</div>
             <div class="box"><div class="box-label">Detected in/on</div>{{detection-version}}, {{detected-in-rel}}, {{creation-time}}</div>
+            <div class="box"><div class="box-label">Owner</div>
+            {{owner}}
+            {{view Ember.Select viewName="select"
+                    contentBinding="controllers.users"
+                    optionLabelPath="fullname"
+                    optionValuePath="model.name"
+                    prompt="Pick a person:"
+                    selectionBinding="owner"}}
+            </div>
             <!--Defect Attachments</br-->
+    </script>
+    <script type="text/x-handlebars" data-template-name="user-list-view">
+      {{view.a}}
     </script>
     <script type="text/x-handlebars" data-template-name="loading">
     <div class="loading content">Loading...</div>
@@ -120,6 +132,8 @@
     <script src="js/router.js"></script>
     <script src="js/models/store.js"></script>
     <script src="js/models/defect.js"></script>
+    <script src="js/models/user.js"></script>
     <script src="js/controllers/defects_controller.js"></script>
+    <script src="js/views/user_list.js"></script>
   </body>
 </html>

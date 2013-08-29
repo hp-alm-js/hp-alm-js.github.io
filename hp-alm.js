@@ -88,6 +88,23 @@ ALM.getDefectAttachments = function getDefectAttachments(defectId, cb, errCb) {
     });
 }
 
+ALM.getUsers = function getUsers(cb, errCb) {
+    var path = "rest/domains/" + DOMAIN +
+               "/projects/" + PROJECT +
+               "/customization/users";
+    ALM.ajax(path, function onSuccess(usersJSON) {
+        var users = usersJSON.User.map(function(el) {
+            return {
+                name: el.Name,
+                fullname: el.FullName,
+                email: el.email,
+                phone: el.phone,
+            };
+        })
+        cb(users);
+    });
+}
+
 ALM.getDefects = function getDefects(cb, errCb, query, fields) {
     if (!fields) {
         fields = ["id","name","description","dev-comments","severity","attachment"];

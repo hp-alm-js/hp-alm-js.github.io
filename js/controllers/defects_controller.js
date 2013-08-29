@@ -1,5 +1,8 @@
+AlmUi.UsersController = Ember.ArrayController.extend({
+});
+
 AlmUi.DefectsController = Ember.ArrayController.extend({
-  needs: ['defects', 'application'],
+  needs: ['defects', 'application', 'users'],
   fetch: function() {
     this.set('controllers.defects.model', this.model());
   }
@@ -14,3 +17,7 @@ AlmUi.DefectsMyController = AlmUi.DefectsController.extend({
 });
 
 AlmUi.DefectsTeamController = Em.ArrayController;
+
+AlmUi.DefectController = Em.ObjectController.extend({
+  needs: ['application', 'users']
+});

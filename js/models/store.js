@@ -18,10 +18,18 @@ AlmUi.AlmAdapter = DS.Adapter.extend({
   },
   deleteRecord: function() {
   },
+  findAll: function(store, type) {
+    var that = this;
+    ALM.getUsers(function onSuccess(users) {
+      that.didFindAll(store, type, {'users': users});
+    }, function onError() {
+        console.log()
+    });
+  },
   find: function(store, type, id) {
     var that = this;
     var queryString = 'id["' + id + '"]';
-    var fields = ["id","name","description","dev-comments","severity","attachment","detection-version","detected-in-rel", "creation-time"];
+    var fields = ["id","name","description","dev-comments","severity","attachment","detection-version","detected-in-rel", "creation-time","owner"];
     ALM.getDefects(function onSuccess(defects) {
       that.didFindRecord(store, type, {'defect': defects[0]}, id);
     }, function onError() {console.log('error')}, queryString, fields);
@@ -29,7 +37,7 @@ AlmUi.AlmAdapter = DS.Adapter.extend({
   findQuery: function(store, type, query, array) {
     var that = this,
         queryString = "",
-        fields = ["id","name","description","dev-comments","severity","attachment", "detection-version","detected-in-rel", "creation-time"];
+        fields = ["id","name","description","dev-comments","severity","attachment", "detection-version","detected-in-rel", "creation-time","owner"];
     for (property in query.query) {
       queryString += property + '["' +
                      query.query[property].join('" or "') + '"];';

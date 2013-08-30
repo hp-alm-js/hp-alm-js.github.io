@@ -75,14 +75,18 @@ app.factory('LoginService', function($q, $rootScope) {
 });
 
 function appCtrl($scope, LoginService) {
+  $scope.loading = true;
   ALM.config("https://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
   // login function
   $scope.login = function () {
     var username = $('#username').val(),
         password = $('#password').val();
     LoginService.login(username, password).then(function() {
-      $scope.currentUser = LoginService.checkLogin();
-      $('#login_form')[0].submit(); // submit to hidden frame
+      LoginService.checkLogin().then(function(user) {
+        $scope.currentUser = user;
+        $scope.loading = false;
+        $('#login_form')[0].submit(); // submit to hidden frame
+      });
     });
   }
   // logout function
@@ -94,7 +98,10 @@ function appCtrl($scope, LoginService) {
     });
   }
   // bind current user
-  $scope.currentUser = LoginService.checkLogin();
+  LoginService.checkLogin().then(function(user) {
+    $scope.currentUser = user;
+    $scope.loading = false;
+  });
 };
 
 function defects($scope) {

@@ -33,7 +33,7 @@
 
     <div ng-controller="RouteCtrl">
       <div ng-controller="appCtrl">
-        <div id="login_container" ng-show="!currentUser" ng-cloak>
+        <div id="login_container" ng-show="!loading && !currentUser" ng-cloak>
             <form class="form-signin" role="form" id="login_form" action="empty.html" target="empty" ng-submit="login()">
               <h2 class="form-signin-heading">Please sign in</h2>
           <!-- to be able to save passwords in a browser,

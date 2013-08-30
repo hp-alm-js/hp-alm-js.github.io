@@ -1,15 +1,16 @@
-var app = angular.module('AlmUi', []);
+var app = angular.module('AlmUi', ['$strap.directives']);
 
 app.
   config(['$routeProvider', function($routeProvider) {
   $routeProvider.
       when('/', {}).
       when('/home', {templateUrl: 'templates/hello.html', controller: HomeCtrl,}).
-      when('/defects', {}).
-      when('/defects', {}).
-      when('/defects/my', {}).
-      when('/defects/team', {}).
-      when('/defect/:defect_id', {})
+      when('/defects/my', {templateUrl: 'templates/defects.html',
+                           controller: my_defects}).
+      when('/defects/team', {templateUrl: 'templates/defects.html',
+                             controller: team_defects}).
+      when('/defect/:defect_id', {templateUrl: 'templates/defect.html',
+                                  controller: defect})
 }]);
 
 app.config(function ($httpProvider) {
@@ -112,9 +113,15 @@ function appCtrl($scope, LoginService) {
   });
 };
 
-function defects($scope) {
-  $scope.defects = ["dfas"];
+function my_defects($scope) {
+  $scope.header = "My defects";
+  $scope.defects = [{"name": 'my', "id": '1'}];
+}
+function team_defects($scope) {
+  $scope.header = "Team defects";
+  $scope.defects = [{"name": 'team', "id": '1'}];
 }
 
 function defect($scope) {
+  $scope.defect = {'name': "team", "id": '1', "dev-comments": '<h1>Bla bla</h1>'}
 }

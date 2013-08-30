@@ -12,6 +12,14 @@ app.
       when('/defect/:defect_id', {})
 }]);
 
+app.config(function ($httpProvider) {
+    var spinnerFunction = function (data, headers) {
+        loading = true;
+        return data;
+    };
+    $httpProvider.defaults.transformRequest.push(spinnerFunction);
+});
+
 function HomeCtrl($scope) {}
 
 function RouteCtrl($scope, $route, $location) {

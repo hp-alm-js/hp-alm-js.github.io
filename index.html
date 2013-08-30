@@ -1,14 +1,21 @@
 <!doctype html>
-<html ng-app>
+<html ng-app="AlmUi">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="defects.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/0.7.4/angular-strap.min.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.1.js"></script>
+    <script src="https://jquery-xml2json-plugin.googlecode.com/svn/trunk/jquery.xml2json.js">
+    </script>
+
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="main.js"></script>
+    <script src="hp-alm.js"></script>
     <link href="signin.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
@@ -21,10 +28,12 @@
   </head>
   <body>
 
+    <div ng-controller="RouteCtrl">
       <!-- to be able to save password in a browser,
            we are not using template here -->
+      <div ng-controller="appCtrl">
     <div id="login_container">
-        <form class="form-signin" role="form" id="login_form" action="empty.html" target="empty">
+        <form class="form-signin" role="form" id="login_form" action="empty.html" target="empty" ng-submit="login()">
           <h2 class="form-signin-heading">Please sign in</h2>
           <input class="form-control" id="username" type="text" placeholder="Username" name="username">
           <input class="form-control" id="password" type="password" placeholder="Password" name="password">
@@ -44,27 +53,47 @@
         <iframe src="empty.html" id="empty" hidden></iframe>
     </div>
 
-      <div ng-controller="application">
-        {{#if currentUser}}
+        <div ng-show="currentUser">
           <div class="navbar">
             <div class="container">
               <ul class="nav nav-pills pull-right">
-                {{#linkTo "defects.my" activeClass="active" tagName="li" href=false}}
-                  {{#linkTo "defects.my"}}My defects{{/linkTo}}
-                {{/linkTo}}
-                {{#linkTo "defects.team" activeClass="active" tagName="li" href=false}}
-                  {{#linkTo "defects.team"}}High priority team defects (SLOW){{/linkTo}}
-                {{/linkTo}}
+                <li data-match-route="/defects/my">
+                  <a href="#defects/my">My defects</a>
+                </li>
+                <li data-match-route="/defects/team">
+                  <a href="#defects/team">High priority team defects (SLOW)</a>
+                </li>
                 <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="logged_in_username">{{currentUser}}</span><b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a {{action logout}}>Logout</a></li>
+                  <li><a href="" ng-click="logout()">Logout</a></li>
                 </ul>
                 </li>
               </ul>
             </div>
           </div>
-          <div class="container">
-            {{outlet}}
+          <div class="container" ng-view>
+            <div ng-controller="defects" ng-show="defectsVisible">
+              <div ng-repeat="defect in defects">
+                <a href="#/defect/{{defect.id}}">{{defect.id}}: {{defect.name}}</a>
+                <br/>
+              </div>
+            </div>
+            <div ng-show="defects/myVisible">
+                  <h1>My defects</h1>
+            </div>
+            <div ng-show="defects/teamVisible">
+                  <h1>Team defects</h1>
+            </div>
+            <div ng-controller="defect" ng-show="defectdefect_idVisible">
+                    <h4>#{{id}} {{name}}</h4>
+                    <div class="box"><div class="box-label">Description</div>{{description}}</div>
+                    <div class="box"><div class="box-label">Comments</div>{{dev-comments}}</div>
+                    <div class="box"><div class="box-label">Detected in/on</div>{{detection-version}}, {{detected-in-rel}}, {{creation-time}}</div>
+                    <div class="box"><div class="box-label">Owner</div>
+                    {{owner}}
+                    </div>
+                    <!--Defect Attachments</br-->
+            </div>
           </div>
           <div class="container">
             <div class="footer">
@@ -72,70 +101,13 @@
               <p>Fork me <a href="https://github.com/hp-alm-js/hp-alm-web-ui">@GitHub</a></p>
 	          </div>
           </div>
-        {{/if}}
-      </script>
+        </div>
+      </div>
 
-    <script type="text/x-handlebars" data-template-name="hello">
-    <div class="jumbotron">
-    <h1>Hi, team!</h1>
-    <p>This app was inspired by the need to quickly view and edit defects in our internal HP ALM instance.</p>
-    <p>No, you can't edit defects (yet).</p>
-    <p>It is meant to be highly tailored to our needs.</p>
-    <p> It is largely experimental and needs some dirty workarounds to work
-    (like the cross origin extension you've installed).</p>
+      <div ng-show="loading">
+        <div class="loading content">Loading...</div>
+      </div>
+
     </div>
-    </script>
-    <script type="text/x-handlebars" data-template-name="defects">
-          {{outlet}}
-          {{#each defect in controller}}
-            {{#linkTo "defect" defect}}{{defect.id}}: {{defect.name}}{{/linkTo}}<br/>
-          {{/each}}
-    </script>
-    <script type="text/x-handlebars" data-template-name="defects/my">
-          <h1>My defects</h1>
-    </script>
-    <script type="text/x-handlebars" data-template-name="defects/team">
-          <h1>Team defects</h1>
-          {{render "defects" controller}}
-    </script>
-    <script type="text/x-handlebars" data-template-name="defect">
-            <h4>#{{id}} {{name}}</h4>
-            <div class="box"><div class="box-label">Description</div>{{{description}}}</div>
-            <div class="box"><div class="box-label">Comments</div>{{{dev-comments}}}</div>
-            <div class="box"><div class="box-label">Detected in/on</div>{{detection-version}}, {{detected-in-rel}}, {{creation-time}}</div>
-            <div class="box"><div class="box-label">Owner</div>
-            {{owner}}
-            {{view Ember.Select viewName="select"
-                    contentBinding="controllers.users"
-                    optionLabelPath="fullname"
-                    optionValuePath="model.name"
-                    prompt="Pick a person:"
-                    selectionBinding="owner"}}
-            </div>
-            <!--Defect Attachments</br-->
-    </script>
-    <script type="text/x-handlebars" data-template-name="user-list-view">
-      {{view.a}}
-    </script>
-    <script type="text/x-handlebars" data-template-name="loading">
-    <div class="loading content">Loading...</div>
-    </script>
-
-    <script src="hp-alm.js"></script>
-
-    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js">
-    </script>
-    <script src="https://jquery-xml2json-plugin.googlecode.com/svn/trunk/jquery.xml2json.js">
-    </script>
-    <script src="http://builds.emberjs.com/ember-1.0.0-rc.7.js"></script>
-    <script src="http://builds.emberjs.com/ember-data-0.13.js"></script>
-
-    <script src="js/app.js"></script>
-    <script src="js/router.js"></script>
-    <script src="js/models/store.js"></script>
-    <script src="js/models/defect.js"></script>
-    <script src="js/models/user.js"></script>
-    <script src="js/controllers/defects_controller.js"></script>
-    <script src="js/views/user_list.js"></script>
   </body>
 </html>

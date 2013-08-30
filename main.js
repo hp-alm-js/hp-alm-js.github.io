@@ -42,12 +42,10 @@ app.factory('LoginService', function($q, $rootScope) {
   var checkLogin = function () {
     var deferred = $q.defer();
     ALM.tryLogin(function onLogin(username) {
-      $('#login_container').hide();
       $('#login_error').hide();
       $rootScope.$apply(function () {deferred.resolve(username)});
     }, function onError(error) {
       console.log(error);
-      $('#login_container').css('display', 'block');
       $rootScope.$apply(function () {deferred.resolve(null)});
     });
     return deferred.promise;

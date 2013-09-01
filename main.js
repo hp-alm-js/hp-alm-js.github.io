@@ -113,6 +113,31 @@ function appCtrl($scope, LoginService) {
   });
 };
 
+
+app.factory('DefectsService', function($q, $rootScope) {
+  return {
+    getDefects: function getDefects(query) {
+      var deferred = $q.defer(),
+          fields = ["id","name","description","dev-comments",
+                    "severity","attachment","detection-version",
+                    "detected-in-rel", "creation-time","owner"];
+      for (property in query.query) {
+        queryString += property + '["' +
+                       query.query[property].join('" or "') + '"];';
+      }
+      ALM.getDefects(function onSuccess(defects, totalCount) {
+                       $rootScope.$apply(function() {
+                         deferred.resolve(defects, totalCount);
+                       });
+                     }, function onError() {
+                       console.log('error')
+                     },
+                     queryString, fields);
+      return deferred.promise;
+    }
+  };
+});
+
 function my_defects($scope) {
   $scope.header = "My defects";
   $scope.defects = [{"name": 'my', "id": '1'}];

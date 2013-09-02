@@ -2,24 +2,23 @@ var app = angular.module('AlmUi', ['$strap.directives']);
 
 app.
   config(['$routeProvider', function($routeProvider) {
+  var resolve = {
+    'CurrentUser':function(LoginService){
+      return LoginService.checkLogin();
+    }
+  };
   $routeProvider.
       when('/', {}).
       when('/home', {templateUrl: 'templates/hello.html', controller: HomeCtrl,}).
       when('/defects/my', {templateUrl: 'templates/defects.html',
-                           controller: my_defects}).
+                           controller: my_defects,
+                           resolve:resolve
+                          }).
       when('/defects/team', {templateUrl: 'templates/defects.html',
                              controller: team_defects}).
       when('/defect/:defect_id', {templateUrl: 'templates/defect.html',
                                   controller: defect})
 }]);
-
-app.config(function ($httpProvider) {
-    var spinnerFunction = function (data, headers) {
-        loading = true;
-        return data;
-    };
-    $httpProvider.defaults.transformRequest.push(spinnerFunction);
-});
 
 function HomeCtrl($scope) {}
 
@@ -118,6 +117,7 @@ app.factory('DefectsService', function($q, $rootScope) {
   return {
     getDefects: function getDefects(query) {
       var deferred = $q.defer(),
+          queryString = "",
           fields = ["id","name","description","dev-comments",
                     "severity","attachment","detection-version",
                     "detected-in-rel", "creation-time","owner"];
@@ -138,13 +138,26 @@ app.factory('DefectsService', function($q, $rootScope) {
   };
 });
 
-function my_defects($scope) {
+function my_defects($scope, CurrentUser, DefectsService) {
+  var query = { owner: [CurrentUser], status: ['Open', 'New'] };
   $scope.header = "My defects";
-  $scope.defects = [{"name": 'my', "id": '1'}];
+  $scope.loading = true;
+  DefectsService.getDefects({query: query}).then(function(defects) {
+    $scope.loading = false;
+    $scope.defects = defects;
+  });
 }
-function team_defects($scope) {
+
+function team_defects($scope, DefectsService) {
+  // TODO find a way to remove this hard-coded team name
+  var query = { "user-95": ["DDM Content"], status: ['Open', 'New'], severity: ["2 - High", "1 - Urgent"] };
   $scope.header = "Team defects";
-  $scope.defects = [{"name": 'team', "id": '1'}];
+  $scope.loading = true;
+  DefectsService.getDefects({query: query}).then(function(defects) {
+    $scope.loading = false;
+    $scope.defects = defects;
+  });
+
 }
 
 function defect($scope) {

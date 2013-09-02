@@ -118,9 +118,11 @@ app.factory('DefectsService', function($q, $rootScope) {
     getDefects: function getDefects(query) {
       var deferred = $q.defer(),
           queryString = "",
-          fields = ["id","name","description","dev-comments",
-                    "severity","attachment","detection-version",
-                    "detected-in-rel", "creation-time","owner"];
+          fields = ["id","name",
+                    //"description","dev-comments",
+                    //"severity","attachment","detection-version",
+                    //"detected-in-rel", "creation-time","owner"
+                   ];
       for (property in query.query) {
         queryString += property + '["' +
                        query.query[property].join('" or "') + '"];';

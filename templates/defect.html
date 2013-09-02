@@ -1,5 +1,9 @@
+        <div ng-show="loading">
+          <div class="content">Loading...</div>
+        </div>
 
-            <div>
+
+            <div ng-show="!loading">
                     <h4>#{{defect.id}} {{defect.name}}</h4>
                     <div class="box"><div class="box-label">Description</div><div ng-bind-html-unsafe="defect.description"></div></div>
                     <div class="box"><div class="box-label">Comments</div><div ng-bind-html-unsafe="defect['dev-comments']"></div></div>

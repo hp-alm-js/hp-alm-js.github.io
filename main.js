@@ -134,7 +134,25 @@ app.factory('DefectsService', function($q, $rootScope) {
                      },
                      queryString, fields);
       return deferred.promise;
+    },
+    getDefect: function getDefects(query) {
+      var id = query.id
+      var deferred = $q.defer(),
+          queryString = 'id["' + id + '"]',
+          fields = ["id","name","description","dev-comments",
+                    "severity","attachment","detection-version",
+                    "detected-in-rel", "creation-time","owner"];
+      ALM.getDefects(function onSuccess(defects, totalCount) {
+                       $rootScope.$apply(function() {
+                         deferred.resolve(defects[0]);
+                       });
+                     }, function onError() {
+                       console.log('error')
+                     },
+                     queryString, fields);
+      return deferred.promise;
     }
+
   };
 });
 
@@ -160,6 +178,11 @@ function team_defects($scope, DefectsService) {
 
 }
 
-function defect($scope) {
-  $scope.defect = {'name': "team", "id": '1', "dev-comments": '<h1>Bla bla</h1>'}
+function defect($scope, DefectsService, $routeParams) {
+  $scope.loading = true;
+  DefectsService.getDefect({id: $routeParams.defect_id}).then(function(defect) {
+    $scope.loading = false;
+    $scope.defect = defect;
+  });
+
 }

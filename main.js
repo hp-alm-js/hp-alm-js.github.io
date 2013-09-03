@@ -143,7 +143,7 @@ app.factory('DefectsService', function($q, $rootScope) {
           queryString = 'id["' + id + '"]',
           fields = ["id","name","description","dev-comments",
                     "severity","attachment","detection-version",
-                    "detected-in-rel", "creation-time","owner"];
+                    "user-69", "creation-time","owner"];
       ALM.getDefects(function onSuccess(defects, totalCount) {
                        $rootScope.$apply(function() {
                          deferred.resolve(defects[0]);

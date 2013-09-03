@@ -7,7 +7,7 @@
                     <h4>#{{defect.id}} {{defect.name}}</h4>
                     <div class="box"><div class="box-label">Description</div><div ng-bind-html-unsafe="defect.description"></div></div>
                     <div class="box"><div class="box-label">Comments</div><div ng-bind-html-unsafe="defect['dev-comments']"></div></div>
-                    <div class="box"><div class="box-label">Detected in/on</div>{{defect["detection-version"]}}, {{defect["detected-in-rel"]}}, {{defect["creation-time"]}}</div>
+                    <div class="box"><div class="box-label">Detected in/on</div>{{defect["detection-version"]}} build {{defect["user-69"]}}, {{defect["creation-time"]}}</div>
                     <div class="box"><div class="box-label">Owner</div>
                     {{defect.owner}}
                     </div>

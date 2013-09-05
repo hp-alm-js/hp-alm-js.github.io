@@ -1,4 +1,4 @@
-var app = angular.module('AlmUi', ['$strap.directives', 'ui.select2']);
+var app = angular.module('AlmUi', ['$strap.directives']);
 
 app.
   config(['$routeProvider', function($routeProvider) {
@@ -204,6 +204,29 @@ function defect($scope, DefectsService, Users, $routeParams) {
     $scope.loading = false;
     $scope.defect = defect;
     $scope.users = Users;
+    $scope.filterUsers = function (user) {
+        if(!$scope.filter) {return true;}
+        //if (user.name == $scope.defect.owner) {return true;}
+        if (user.fullname.toLowerCase().indexOf($scope.filter.toLowerCase()) != -1) {
+          return true;
+        }
+    };
+    $scope.getFullName = function(name) {
+      var users = $scope.users;
+      for (var i = 0; i < users.length; ++i) {
+        if(users[i].name == name) {
+          return users[i].fullname;
+        }
+      }
+    }
+    $scope.select = function(username) {
+      $scope.defect.owner = username;
+      $scope.filter = "";
+      $scope.showBox = false;
+    }
+    $scope.showUsers = function(event) {
+      $scope.showBox = !$scope.showBox;
+    }
   });
 
 }

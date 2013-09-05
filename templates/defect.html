@@ -1,17 +1,35 @@
-        <div ng-show="loading">
-          <div class="content">Loading...</div>
+<div ng-show="loading">
+    <div class="content">Loading...</div>
+</div>
+
+
+<div ng-show="!loading">
+    <h4>#{{defect.id}} {{defect.name}}</h4>
+    <div class="box"><div class="box-label">Description</div><div ng-bind-html-unsafe="defect.description"></div></div>
+    <div class="box"><div class="box-label">Comments</div><div ng-bind-html-unsafe="defect['dev-comments']"></div></div>
+    <div class="box"><div class="box-label">Detected in/on</div>{{defect["detection-version"]}} build {{defect["user-69"]}}, {{defect["creation-time"]}}</div>
+    <div class="box"><div class="box-label">Owner</div>
+
+        <div class="select2-container select2-container-active">
+            <a class="select2-choice" ng-click="showUsers($event)">
+                <span class="select2-chosen">{{getFullName(defect.owner)}}</span>
+                <abbr class="select2-search-choice-close"></abbr>
+                <span class="select2-arrow"><b></b></span>
+            </a>
+            <div ng-show="showBox" class="select2-drop select2-with-searchbox select2-drop-active">
+            <div class="select2-search">
+                <input ng-model="filter" class="select2-input select2-focused" />
+            </div>
+            <ul class="select2-results">
+                <li ng-repeat="user in users | filter:filterUsers" class="select2-results-dept-0 select2-result select2-result-selectable">
+                    <div class="select2-result-label" ng-click="select(user.name);">
+                        {{user.fullname}}
+                    </div>
+                </li>
+            </ul>
+            </div>
         </div>
 
-
-            <div ng-show="!loading">
-                    <h4>#{{defect.id}} {{defect.name}}</h4>
-                    <div class="box"><div class="box-label">Description</div><div ng-bind-html-unsafe="defect.description"></div></div>
-                    <div class="box"><div class="box-label">Comments</div><div ng-bind-html-unsafe="defect['dev-comments']"></div></div>
-                    <div class="box"><div class="box-label">Detected in/on</div>{{defect["detection-version"]}} build {{defect["user-69"]}}, {{defect["creation-time"]}}</div>
-                    <div class="box"><div class="box-label">Owner</div>
-                        <select class="selectpicker" ui-select2 ng-model="defect.owner">
-                            <option ng-repeat="user in users" value="{{user.name}}">{{user.fullname}}</option>
-                        </select>
-                    </div>
-                    <!--Defect Attachments</br-->
-            </div>
+    </div>
+    <!--Defect Attachments</br-->
+</div>

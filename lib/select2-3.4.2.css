@@ -135,17 +135,17 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
 
 .select2-drop {
     width: 100%;
-    margin-top: -1px;
+    /*margin-top: -1px;*/
     position: absolute;
     z-index: 9999;
-    top: 100%;
+    bottom: 30px;
 
     background: #fff;
     color: #000;
     border: 1px solid #aaa;
-    border-top: 0;
+    /*border-top: 0;*/
 
-    border-radius: 0 0 4px 4px;
+    border-radius: 4px 4px 4px 4px;
 
     -webkit-box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
             box-shadow: 0 4px 5px rgba(0, 0, 0, .15);
@@ -163,9 +163,8 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
 .select2-drop.select2-drop-above {
     margin-top: 1px;
     border-top: 1px solid #aaa;
-    border-bottom: 0;
 
-    border-radius: 4px 4px 0 0;
+    border-radius: 4px 4px 4px 4px;
 
     -webkit-box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
             box-shadow: 0 -4px 5px rgba(0, 0, 0, .15);
@@ -173,7 +172,6 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
 
 .select2-drop-active {
     border: 1px solid #5897fb;
-    border-top: none;
 }
 
 .select2-drop.select2-drop-above.select2-drop-active {
@@ -203,6 +201,10 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
     background-image: linear-gradient(top, #ccc 0%, #eee 60%);
 }
 
+.select2-container .select2-choice {
+  cursor: pointer;
+}
+
 .select2-container .select2-choice .select2-arrow b {
     display: block;
     width: 100%;
@@ -217,6 +219,8 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
     margin: 0;
     padding-left: 4px;
     padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
 
     position: relative;
     z-index: 10000;
@@ -349,7 +353,6 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
 }
 
 .select2-results .select2-result-label {
-    padding: 3px 7px 4px;
     margin: 0;
     cursor: pointer;
 
@@ -361,6 +364,11 @@ Version: 3.4.2 Timestamp: Mon Aug 12 15:04:12 PDT 2013
          -moz-user-select: none;
           -ms-user-select: none;
               user-select: none;
+}
+
+.select2-results .select2-result-label:hover {
+    background: #3875d7;
+    color: #fff;
 }
 
 .select2-results .select2-highlighted {

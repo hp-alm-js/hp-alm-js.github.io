@@ -27,3 +27,6 @@ div.loading {
   font-size: x-large;
   padding: 1em;
 }
+.selectpicker {
+  width: 100%;
+}

@@ -1,10 +1,13 @@
-var app = angular.module('AlmUi', ['$strap.directives']);
+var app = angular.module('AlmUi', ['$strap.directives', 'ui.select2']);
 
 app.
   config(['$routeProvider', function($routeProvider) {
   var resolve = {
     'CurrentUser':function(LoginService){
       return LoginService.checkLogin();
+    },
+    'Users': function(UsersService) {
+      return UsersService.getUsers();
     }
   };
   $routeProvider.
@@ -17,14 +20,16 @@ app.
       when('/defects/team', {templateUrl: 'templates/defects.html',
                              controller: team_defects}).
       when('/defect/:defect_id', {templateUrl: 'templates/defect.html',
-                                  controller: defect})
+                                  controller: defect,
+                                  resolve:resolve
+                                 })
 }]);
 
 function HomeCtrl($scope) {}
 
 function RouteCtrl($scope, $route, $location) {
   if (['', '/'].indexOf($location.path()) != -1) {
-    $location.path("/home"); 
+    $location.path("/home");
   }
   var assignRouteVisible = function() {
     var path = $location.path(),
@@ -45,6 +50,19 @@ function RouteCtrl($scope, $route, $location) {
   assignRouteVisible();
 }
 
+app.factory('UsersService', function($q, $rootScope) {
+  return {
+    getUsers: function getUsers(username, password) {
+      var deferred = $q.defer();
+      ALM.getUsers(function cb(users) {
+          $rootScope.$apply(function () {deferred.resolve(users)});
+        }, function onError() {
+          $rootScope.$apply(function () {deferred.resolve([])});
+        });
+      return deferred.promise;
+    },
+  };
+});
 
 app.factory('LoginService', function($q, $rootScope) {
   var checkLogin = function () {
@@ -180,11 +198,12 @@ function team_defects($scope, DefectsService) {
 
 }
 
-function defect($scope, DefectsService, $routeParams) {
+function defect($scope, DefectsService, Users, $routeParams) {
   $scope.loading = true;
   DefectsService.getDefect({id: $routeParams.defect_id}).then(function(defect) {
     $scope.loading = false;
     $scope.defect = defect;
+    $scope.users = Users;
   });
 
 }

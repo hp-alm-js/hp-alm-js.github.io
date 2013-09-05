@@ -9,7 +9,9 @@
                     <div class="box"><div class="box-label">Comments</div><div ng-bind-html-unsafe="defect['dev-comments']"></div></div>
                     <div class="box"><div class="box-label">Detected in/on</div>{{defect["detection-version"]}} build {{defect["user-69"]}}, {{defect["creation-time"]}}</div>
                     <div class="box"><div class="box-label">Owner</div>
-                    {{defect.owner}}
+                        <select class="selectpicker" ui-select2 ng-model="defect.owner">
+                            <option ng-repeat="user in users" value="{{user.name}}">{{user.fullname}}</option>
+                        </select>
                     </div>
                     <!--Defect Attachments</br-->
             </div>

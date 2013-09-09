@@ -27,7 +27,7 @@ ALM.onResponse = function onResponse(response, cb, errCb) {
     }
 }
 
-ALM.ajax = function ajax(path, onSuccess, onError, type, data) {
+ALM.ajax = function ajax(path, onSuccess, onError, type, data, contentType) {
     $.ajax(API_URL + path, {
         success: function (response) {
             ALM.onResponse(response, onSuccess, onError);
@@ -37,7 +37,8 @@ ALM.ajax = function ajax(path, onSuccess, onError, type, data) {
             withCredentials: true
         },
         type: type,
-        data: data
+        data: data,
+        contentType: contentType
     });
 };
 
@@ -74,6 +75,32 @@ function convertFields(entities) {
     });
 }
 
+  function convertFieldsBack(entity, type) {
+    var start = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>' +
+        '<Entity Type="' + type + '">' + '<Fields>',
+        middle = '',
+        end = '</Fields></Entity>';
+    for (var fieldName in entity) {
+      middle += '<Field Name="' + fieldName +'">' +
+        '<Value>' + escapeXml(entity[fieldName]) + '</Value></Field>';
+    }
+    return start + middle + end;
+  }
+
+  function escapeXml (s) {
+    var XML_CHAR_MAP = {
+      '<': '&lt;',
+      '>': '&gt;',
+      '&': '&amp;',
+      '"': '&quot;',
+      "'": '&apos;'
+    };
+
+    return s.replace(/[<>&"']/g, function (ch) {
+      return XML_CHAR_MAP[ch];
+    });
+  }
+
 ALM.getDefectAttachments = function getDefectAttachments(defectId, cb, errCb) {
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +
@@ -106,10 +133,12 @@ ALM.getUsers = function getUsers(cb, errCb) {
 }
 
 ALM.getDefects = function getDefects(cb, errCb, query, fields) {
+    var computedFields = ["has-others-linkage", "has-linkage", "alert-data"];
     if (!fields) {
         fields = ["id","name","description","dev-comments","severity","attachment"];
     }
-    var fieldsParam = "fields="+ fields.join(",") + "&";
+    fields = fields.filter(function(field) {computedFields.indexOf(field) != -1;})
+    var fieldsParam = 'fields=' + fields.join(',') + '&';
     var queryParam = "query={" + query + "}&";
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +
@@ -119,6 +148,66 @@ ALM.getDefects = function getDefects(cb, errCb, query, fields) {
         var defects = convertFields(defectsJSON.Entity);
         cb(defects, defectsCount);
     }, errCb);
+}
+
+ALM.getChanged = function getChanged(oldDefect, newDefect) {
+  var changed = {};
+  for (var field in newDefect) {
+    if (newDefect[field] != oldDefect[field] &&
+        typeof(newDefect[field]) != 'object' &&
+        oldDefect[field] != undefined
+        ) {
+      changed[field] = newDefect[field];
+    }
+  }
+  return changed;
+};
+
+ALM.saveDefect = function saveDefect(cb, errCb, defect) {
+  var error = null,
+      defectUrl = "rest/domains/" + DOMAIN +
+            "/projects/" + PROJECT +
+            "/defects/" + defect.id,
+      start = function start() {
+        lock();
+      },
+      lock = function lock() {
+        verify(); // TODO locking error -> afterUnlock
+      },
+      verify = function verify() {
+        var fields = Object.keys(defect);
+        ALM.getDefects(function onSuccess(defects) {
+          var oldDefect = defects[0], newDefect = defect,
+              changedFields = ALM.getChanged(oldDefect, newDefect);
+          // verify the latest version to prevent conflicts
+          save(changedFields);
+        }, function onError(checkoutError) {
+          error = checkoutError;
+          unlock();
+        }, "id[" + defect.id + "]", fields);
+      },
+      save = function save(changedFields) {
+        // actual save
+        var path = defectUrl,
+            xml = convertFieldsBack(changedFields, 'defect');
+        ALM.ajax(path, function onSuccess() {
+          unlock(); // always unlock after save
+        }, function onError(saveError) {
+          error = saveError;
+          unlock(); // always unlock after error
+        }, 'PUT', xml, 'application/xml');
+      },
+      unlock = function unlock() {
+        afterUnlock();
+      },
+      afterUnlock = function afterUnlock() {
+        if (error) {
+          errCb(error);
+        } else {
+          cb();
+        }
+      };
+  start();
 }
 
 })();

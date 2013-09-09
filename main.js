@@ -102,7 +102,7 @@ app.factory('LoginService', function($q, $rootScope) {
 
 function appCtrl($scope, LoginService) {
   $scope.loading = true;
-  ALM.config("https://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
+  ALM.config("http://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
   // login function
   $scope.login = function () {
     var username = $('#username').val(),
@@ -171,8 +171,23 @@ app.factory('DefectsService', function($q, $rootScope) {
                      },
                      queryString, fields);
       return deferred.promise;
+    },
+    saveDefect: function saveDefect(defect) {
+      var deferred = $q.defer();
+      ALM.saveDefect(
+        function onSave() {
+          deferred.resolve();
+          $rootScope.$apply();
+        },
+        function onError(error) {
+          console.log('promise on error');
+          console.log(error);
+          deferred.reject(error);
+        },
+        defect
+      );
+      return deferred.promise;
     }
-
   };
 });
 
@@ -203,6 +218,7 @@ function defect($scope, DefectsService, Users, $routeParams) {
   DefectsService.getDefect({id: $routeParams.defect_id}).then(function(defect) {
     $scope.loading = false;
     $scope.defect = defect;
+    $scope.last_saved_defect = angular.copy(defect);
     $scope.users = Users;
     $scope.filterUsers = function (user) {
         if(!$scope.filter) {return true;}
@@ -218,15 +234,29 @@ function defect($scope, DefectsService, Users, $routeParams) {
           return users[i].fullname;
         }
       }
-    }
+    };
     $scope.select = function(username) {
       $scope.defect.owner = username;
       $scope.filter = "";
       $scope.showBox = false;
-    }
+    };
     $scope.showUsers = function(event) {
       $scope.showBox = !$scope.showBox;
-    }
+    };
+    $scope.saveEnabledClass = function() {
+      var changed = ALM.getChanged($scope.last_saved_defect, $scope.defect);
+      if (Object.keys(changed).length === 0) {
+        return 'disabled';
+      }
+      return '';
+    };
+    $scope.save = function() {
+      DefectsService.saveDefect($scope.defect).then(function onSave() {
+        $scope.last_saved_defect = angular.copy($scope.defect);
+      }, function onError(error) {
+        console.log(error);
+      });
+    };
   });
 
 }

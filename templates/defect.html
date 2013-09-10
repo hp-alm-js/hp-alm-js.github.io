@@ -7,7 +7,9 @@
     <h4>#{{defect.id}} {{defect.name}}</h4>
     <div class="box"><div class="box-label">Description</div><div contenteditable="true" ng-model="defect.description"></div></div>
     <div class="box"><div class="box-label">Comments</div><div ng-bind-html-unsafe="defect['dev-comments']"></div></div>
-    <div class="box"><div class="box-label">Detected in/on</div>{{defect["detection-version"]}} build {{defect["user-69"]}}, {{defect["creation-time"]}}</div>
+    <div class="box"><div class="box-label">Detected in/on/by</div>{{defect["detection-version"]}}
+        build {{defect["user-69"]}},
+        {{defect["creation-time"]}} by {{getFullName(defect["detected-by"])}}</div>
     <div class="box"><div class="box-label">Owner</div>
 
         <div class="select2-container select2-container-active">

@@ -192,7 +192,7 @@ app.factory('DefectsService', function($q, $rootScope) {
           queryString = 'id["' + id + '"]',
           fields = ["id","name","description","dev-comments",
                     "severity","attachment","detection-version",
-                    "user-69", "creation-time","owner"];
+                    "user-69", "creation-time","owner", "detected-by"];
       ALM.getDefects(function onSuccess(defects, totalCount) {
                        $rootScope.$apply(function() {
                          deferred.resolve(defects[0]);
@@ -301,6 +301,7 @@ function defect($scope, DefectsService, Users, $routeParams) {
       });
     };
   });
+  // TODO only if hasAttachments = Y
   DefectsService.getDefectAttachments({id: $routeParams.defect_id}).then(function(attachments) {
     $scope.attachments = attachments;
   })

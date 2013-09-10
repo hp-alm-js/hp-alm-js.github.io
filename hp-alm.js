@@ -133,12 +133,13 @@ ALM.getUsers = function getUsers(cb, errCb) {
 }
 
 ALM.getDefects = function getDefects(cb, errCb, query, fields) {
-    var computedFields = ["has-others-linkage", "has-linkage", "alert-data"];
+    var computedFields = ["has-others-linkage", "has-linkage", "alert-data"],
+        fieldsParam = null;
     if (!fields) {
         fields = ["id","name","description","dev-comments","severity","attachment"];
     }
-    fields = fields.filter(function(field) {computedFields.indexOf(field) != -1;})
-    var fieldsParam = 'fields=' + fields.join(',') + '&';
+    fields = fields.filter(function(field) {return computedFields.indexOf(field) == -1;})
+    fieldsParam = 'fields=' + fields.join(',') + '&';
     var queryParam = "query={" + query + "}&";
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +

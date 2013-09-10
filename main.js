@@ -209,7 +209,6 @@ app.factory('DefectsService', function($q, $rootScope) {
       ALM.getDefectAttachments(id, function onSuccess(attachments) {
         $rootScope.$apply(function() {
           deferred.resolve(attachments);
-          console.log(attachments)
         });
       }, function onError() {
         console.log('error')

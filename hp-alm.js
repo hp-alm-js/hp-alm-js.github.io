@@ -163,7 +163,7 @@ ALM.getChanged = function getChanged(oldDefect, newDefect) {
   return changed;
 };
 
-ALM.saveDefect = function saveDefect(cb, errCb, defect) {
+ALM.saveDefect = function saveDefect(cb, errCb, defect, lastSavedDefect) {
   var error = null,
       defectUrl = "rest/domains/" + DOMAIN +
             "/projects/" + PROJECT +
@@ -178,9 +178,16 @@ ALM.saveDefect = function saveDefect(cb, errCb, defect) {
         var fields = Object.keys(defect);
         ALM.getDefects(function onSuccess(defects) {
           var oldDefect = defects[0], newDefect = defect,
-              changedFields = ALM.getChanged(oldDefect, newDefect);
+              changedFields = ALM.getChanged(oldDefect, newDefect),
+              hasNoConflicts = Object.keys(ALM.getChanged(oldDefect,
+                                                          lastSavedDefect)).length == 0;
           // verify the latest version to prevent conflicts
-          save(changedFields);
+          if (hasNoConflicts) {
+            save(changedFields);
+          } else {
+            error = "There was an editing conflict! Please refresh";
+            unlock();
+          }
         }, function onError(checkoutError) {
           error = checkoutError;
           unlock();

@@ -172,7 +172,7 @@ app.factory('DefectsService', function($q, $rootScope) {
                      queryString, fields);
       return deferred.promise;
     },
-    saveDefect: function saveDefect(defect) {
+    saveDefect: function saveDefect(defect, lastSavedDefect) {
       var deferred = $q.defer();
       ALM.saveDefect(
         function onSave() {
@@ -180,11 +180,10 @@ app.factory('DefectsService', function($q, $rootScope) {
           $rootScope.$apply();
         },
         function onError(error) {
-          console.log('promise on error');
-          console.log(error);
           deferred.reject(error);
+          $rootScope.$apply();
         },
-        defect
+        defect, lastSavedDefect
       );
       return deferred.promise;
     }
@@ -251,9 +250,10 @@ function defect($scope, DefectsService, Users, $routeParams) {
       return '';
     };
     $scope.save = function() {
-      DefectsService.saveDefect($scope.defect).then(function onSave() {
+      DefectsService.saveDefect($scope.defect, $scope.last_saved_defect).then(function onSave() {
         $scope.last_saved_defect = angular.copy($scope.defect);
       }, function onError(error) {
+        $scope.errorMessage = error;
         console.log(error);
       });
     };

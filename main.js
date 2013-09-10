@@ -50,6 +50,9 @@ app.directive('contenteditable', function() {
         if( attrs.stripBr && html == '<br>' ) {
           html = '';
         }
+        // some tags are discarded by the contenteditable
+        // bring those back
+        html = "<html><body>" + html + "</body></html>";
         ngModel.$setViewValue(html);
       }
     }

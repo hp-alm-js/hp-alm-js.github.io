@@ -203,6 +203,19 @@ app.factory('DefectsService', function($q, $rootScope) {
                      queryString, fields);
       return deferred.promise;
     },
+    getDefectAttachments: function getDefectAttachments(query) {
+      var id = query.id
+      var deferred = $q.defer();
+      ALM.getDefectAttachments(id, function onSuccess(attachments) {
+        $rootScope.$apply(function() {
+          deferred.resolve(attachments);
+          console.log(attachments)
+        });
+      }, function onError() {
+        console.log('error')
+      });
+      return deferred.promise;
+    },
     saveDefect: function saveDefect(defect, lastSavedDefect) {
       var deferred = $q.defer();
       ALM.saveDefect(
@@ -289,5 +302,8 @@ function defect($scope, DefectsService, Users, $routeParams) {
       });
     };
   });
+  DefectsService.getDefectAttachments({id: $routeParams.defect_id}).then(function(attachments) {
+    $scope.attachments = attachments;
+  })
 
 }

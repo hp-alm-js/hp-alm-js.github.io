@@ -31,7 +31,14 @@
         </div>
 
     </div>
-    <!--Defect Attachments</br-->
+
+    <div  class="box" ng-show="attachments">
+        <div class="box-label">Defect Attachments</div>
+        <li ng-repeat="attachment in attachments">
+            <a href="{{attachment.url}}" download>{{attachment.name}}</a>
+        </li>
+    </div>
+
     <div class="alert alert-danger" ng-show="errorMessage">{{errorMessage}}</div>
     <button ng-click="save()"
             class="ng-class: saveEnabledClass(); btn btn-primary pull-right">

@@ -18,7 +18,9 @@ app.
                            resolve:resolve
                           }).
       when('/defects/team', {templateUrl: 'templates/defects.html',
-                             controller: team_defects}).
+                             controller: team_defects,
+                             resolve:resolve
+                            }).
       when('/defect/:defect_id', {templateUrl: 'templates/defect.html',
                                   controller: defect,
                                   resolve:resolve
@@ -173,7 +175,8 @@ app.factory('DefectsService', function($q, $rootScope) {
           fields = ["id","name",
                     //"description","dev-comments",
                     //"severity","attachment","detection-version",
-                    //"detected-in-rel", "creation-time","owner"
+                    //"detected-in-rel", "creation-time",
+                    "owner"
                    ];
       for (property in query.query) {
         queryString += property + '["' +
@@ -236,21 +239,31 @@ app.factory('DefectsService', function($q, $rootScope) {
   };
 });
 
-function my_defects($scope, CurrentUser, DefectsService) {
+var _getFullName = function(name, users) {
+  for (var i = 0; i < users.length; ++i) {
+    if(users[i].name == name) {
+      return users[i].fullname;
+    }
+  }
+};
+
+function my_defects($scope, CurrentUser, Users, DefectsService) {
   var query = { owner: [CurrentUser], status: ['Open', 'New'] };
   $scope.header = "My defects";
   $scope.loading = true;
+  $scope.getFullName = function (name) {return _getFullName(name, Users);}
   DefectsService.getDefects({query: query}).then(function(defects) {
     $scope.loading = false;
     $scope.defects = defects;
   });
 }
 
-function team_defects($scope, DefectsService) {
+function team_defects($scope, Users, DefectsService) {
   // TODO find a way to remove this hard-coded team name
   var query = { "user-95": ["DDM Content"], status: ['Open', 'New'], severity: ["2 - High", "1 - Urgent"] };
   $scope.header = "Team defects";
   $scope.loading = true;
+  $scope.getFullName = function (name) {return _getFullName(name, Users);}
   DefectsService.getDefects({query: query}).then(function(defects) {
     $scope.loading = false;
     $scope.defects = defects;

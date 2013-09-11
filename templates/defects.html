@@ -4,9 +4,15 @@
           <div class="content">Loading...</div>
         </div>
 
-            <div>
-              <div ng-repeat="defect in defects">
-                <a href="#/defect/{{defect.id}}">{{defect.id}}: {{defect.name}}</a>
-                <br/>
-              </div>
-            </div>
+            <table ng-show="defects" data-provides="rowlink" class="table table-bordered">
+                <tr><th>Id</th><th>Description</th><th>Owner</th></tr>
+              <tr ng-repeat="defect in defects">
+                <td>
+                  <a href="#/defect/{{defect.id}}">{{defect.id}}</a>
+                </td>
+                <td>
+                  <a href="#/defect/{{defect.id}}">{{defect.name}}</a>
+                </td>
+                  <td>{{getFullName(defect.owner)}}</td>
+              </tr>
+            </table>

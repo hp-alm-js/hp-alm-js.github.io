@@ -1,18 +1,23 @@
-            <h1>{{header}}</h1>
+<h1>{{header}}</h1>
 
-        <div ng-show="loading">
-          <div class="content">Loading...</div>
-        </div>
+<div ng-show="loading">
+    <div class="content">Loading...</div>
+</div>
 
-            <table ng-show="defects" data-provides="rowlink" class="table table-bordered">
-                <tr><th>Id</th><th>Description</th><th>Owner</th></tr>
-              <tr ng-repeat="defect in defects">
-                <td>
-                  <a href="#/defect/{{defect.id}}">{{defect.id}}</a>
-                </td>
-                <td>
-                  <a href="#/defect/{{defect.id}}">{{defect.name}}</a>
-                </td>
-                  <td>{{getFullName(defect.owner)}}</td>
-              </tr>
-            </table>
+<div ng-show="defects" class="form-group">
+    <input ng-model="searchText" placeholder="Quick filter..."
+           class="form-control"/ >
+</div>
+
+<table ng-show="defects" data-provides="rowlink" class="table table-bordered">
+    <tr><th>Id</th><th>Description</th><th>Owner</th></tr>
+    <tr ng-repeat="defect in defects| filter:searchText">
+        <td>
+            <a href="#/defect/{{defect.id}}">{{defect.id}}</a>
+        </td>
+        <td>
+            <a href="#/defect/{{defect.id}}">{{defect.name}}</a>
+        </td>
+        <td>{{getFullName(defect.owner)}}</td>
+    </tr>
+</table>

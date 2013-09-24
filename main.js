@@ -13,12 +13,8 @@ app.
   $routeProvider.
       when('/', {}).
       when('/home', {templateUrl: 'templates/hello.html', controller: HomeCtrl,}).
-      when('/defects/my', {templateUrl: 'templates/defects.html',
-                           controller: my_defects,
-                           resolve:resolve
-                          }).
-      when('/defects/team', {templateUrl: 'templates/defects.html',
-                             controller: team_defects,
+      when('/defects/:preset_name', {templateUrl: 'templates/defects.html',
+                             controller: defects,
                              resolve:resolve
                             }).
       when('/defect/:defect_id', {templateUrl: 'templates/defect.html',
@@ -136,7 +132,7 @@ app.factory('LoginService', function($q, $rootScope) {
   };
 });
 
-function appCtrl($scope, LoginService) {
+function appCtrl($scope, LoginService, PresetsService) {
   $scope.loading = true;
   ALM.config("http://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
   // login function
@@ -164,8 +160,8 @@ function appCtrl($scope, LoginService) {
     $scope.currentUser = user;
     $scope.loading = false;
   });
+  $scope.presets = PresetsService.get($scope.currentUser);
 };
-
 
 app.factory('DefectsService', function($q, $rootScope) {
   return {
@@ -239,6 +235,55 @@ app.factory('DefectsService', function($q, $rootScope) {
   };
 });
 
+
+var getPresetsFromStorage = function() {
+  var presets = {};
+  if (localStorage.queryPresets) {
+    presets = JSON.parse(localStorage.queryPresets)
+  }
+  return presets;
+}
+
+var savePresetsToStorage = function(presets) {
+  localStorage.queryPresets = JSON.stringify(presets);
+}
+
+
+app.factory('PresetsService', function($q, $rootScope) {
+  var presets = null;
+  return {
+    get: function(currentUser) {
+      presets = {
+        my: {
+          id: "my",
+          header: "My defects",
+          query: {
+            owner: [currentUser]
+          }
+        },
+        team: {
+          id: "team",
+          header: "Team defects",
+          query: {
+            // TODO find a way to remove this hard-coded team name
+            "user-95": ["DDM Content"],
+            status: ['Open', 'New'],
+            severity: ["2 - High", "1 - Urgent"]
+          }
+        }
+      };
+      $.extend(presets, getPresetsFromStorage());
+      return presets;
+    },
+    save: function(newPresets) {
+      console.log("hohoho");
+      presets = newPresets;
+      savePresetsToStorage(newPresets);
+    }
+  };
+});
+
+
 var _getFullName = function(name, users) {
   for (var i = 0; i < users.length; ++i) {
     if(users[i].name == name) {
@@ -247,27 +292,28 @@ var _getFullName = function(name, users) {
   }
 };
 
-function my_defects($scope, CurrentUser, Users, DefectsService) {
-  var query = { owner: [CurrentUser], status: ['Open', 'New'] };
-  $scope.header = "My defects";
-  $scope.loading = true;
+function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $routeParams) {
+  $scope.presets = PresetsService.get(CurrentUser);
+  $scope.preset = $scope.presets[$routeParams.preset_name];
+  $scope.query = JSON.stringify($scope.preset.query);
   $scope.getFullName = function (name) {return _getFullName(name, Users);}
-  DefectsService.getDefects({query: query}).then(function(defects) {
-    $scope.loading = false;
-    $scope.defects = defects;
-  });
-}
-
-function team_defects($scope, Users, DefectsService) {
-  // TODO find a way to remove this hard-coded team name
-  var query = { "user-95": ["DDM Content"], status: ['Open', 'New'], severity: ["2 - High", "1 - Urgent"] };
-  $scope.header = "Team defects";
-  $scope.loading = true;
-  $scope.getFullName = function (name) {return _getFullName(name, Users);}
-  DefectsService.getDefects({query: query}).then(function(defects) {
-    $scope.loading = false;
-    $scope.defects = defects;
-  });
+  $scope.refresh = function() {
+    $scope.defects = null;
+    $scope.loading = true;
+    DefectsService.getDefects({query: JSON.parse($scope.query)}).then(function(defects) {
+      $scope.loading = false;
+      $scope.defects = defects;
+    });
+  }
+  $scope.editPreset = function() {
+    $scope.edit_preset = !$scope.edit_preset;
+  }
+  $scope.updatePreset = function() {
+    PresetsService.save($scope.presets);
+    $scope.edit_preset = false;
+    $scope.refresh();
+  }
+  $scope.refresh();
 
 }
 

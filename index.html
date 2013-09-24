@@ -49,11 +49,8 @@
           <div class="navbar" bs-navbar>
             <div class="container">
               <ul class="nav nav-pills pull-right">
-                <li data-match-route="/defects/my">
-                  <a href="#defects/my">My defects</a>
-                </li>
-                <li data-match-route="/defects/team">
-                  <a href="#defects/team">High priority team defects (SLOW)</a>
+                <li data-match-route="/defects/{{preset.id}}" ng-repeat="preset in presets">
+                  <a href="#defects/{{preset.id}}">{{preset.header}}</a>
                 </li>
                 <li><a class="dropdown-toggle" data-toggle="dropdown" href="#"><span id="logged_in_username">{{currentUser}}</span><b class="caret"></b></a>
                 <ul class="dropdown-menu">

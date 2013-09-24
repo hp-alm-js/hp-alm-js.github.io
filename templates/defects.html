@@ -1,4 +1,26 @@
-<h1>{{header}}</h1>
+<h1><a href="javascript:void(0)" ng-click="editPreset()">{{preset.header}}</a></h1>
+
+
+<div  ng-show="edit_preset" class="container box">
+<form class="form" role="form">
+    <div class="box-label">Edit query</div>
+    <div class="form-group">
+        <label for="query">Query name</label>
+        <input class="form-control" ng-model="preset.header"/>
+    </div>
+    <div class="form-group">
+        <label for="query">Query</label>
+        <input class="form-control" ng-model="query"/>
+    </div>
+    <button class="btn btn-primary" ng-click="updatePreset()">
+        Save
+    </button>
+    <button class="btn btn-default" ng-click="editPreset()">
+        Cancel
+    </button>
+</form>
+</div>
+
 
 <div ng-show="loading">
     <div class="content">Loading...</div>

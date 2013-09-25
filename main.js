@@ -172,15 +172,17 @@ app.factory('DefectsService', function($q, $rootScope) {
                     //"description","dev-comments",
                     //"severity","attachment","detection-version",
                     //"detected-in-rel", "creation-time",
-                    "owner"
+                    "owner", "status", "severity"
                    ];
       for (property in query.query) {
-        queryString += property + '["' +
-                       query.query[property].join('" or "') + '"];';
+        if (query.query[property].length) {
+          queryString += property + '["' +
+                         query.query[property].join('" or "') + '"];';
+        }
       }
       ALM.getDefects(function onSuccess(defects, totalCount) {
                        $rootScope.$apply(function() {
-                         deferred.resolve(defects, totalCount);
+                         deferred.resolve({defects: defects, totalCount: totalCount});
                        });
                      }, function onError() {
                        console.log('error')
@@ -276,7 +278,6 @@ app.factory('PresetsService', function($q, $rootScope) {
       return presets;
     },
     save: function(newPresets) {
-      console.log("hohoho");
       presets = newPresets;
       savePresetsToStorage(newPresets);
     }
@@ -293,6 +294,9 @@ var _getFullName = function(name, users) {
 };
 
 function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $routeParams) {
+  $scope.severities = ["1 - Urgent", "2 - High", "3 - Medium", "4 - Low"];
+  $scope.statuses = ["New", "Open", "Fixed", "Closed", "Deferred",
+                     "Duplicate", "Closed - No Change"];
   $scope.presets = PresetsService.get(CurrentUser);
   $scope.preset = $scope.presets[$routeParams.preset_name];
   $scope.query = JSON.stringify($scope.preset.query);
@@ -300,9 +304,10 @@ function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $ro
   $scope.refresh = function() {
     $scope.defects = null;
     $scope.loading = true;
-    DefectsService.getDefects({query: JSON.parse($scope.query)}).then(function(defects) {
+    DefectsService.getDefects({query: $scope.preset.query}).then(function(defects) {
       $scope.loading = false;
-      $scope.defects = defects;
+      $scope.defects = defects.defects;
+      $scope.totalCount = defects.totalCount;
     });
   }
   $scope.editPreset = function() {

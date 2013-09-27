@@ -132,18 +132,26 @@ ALM.getUsers = function getUsers(cb, errCb) {
     });
 }
 
-ALM.getDefects = function getDefects(cb, errCb, query, fields) {
+ALM.getDefects = function getDefects(cb, errCb, query, fields, pageSize, startIndex) {
     var computedFields = ["has-others-linkage", "has-linkage", "alert-data"],
         fieldsParam = null;
     if (!fields) {
         fields = ["id","name","description","dev-comments","severity","attachment"];
     }
+    if (!pageSize) {
+        pageSize = 100;
+    }
+    if (!startIndex) {
+        startIndex = 1;
+    }
     fields = fields.filter(function(field) {return computedFields.indexOf(field) == -1;})
     fieldsParam = 'fields=' + fields.join(',') + '&';
     var queryParam = "query={" + query + "}&";
+    var pageSizeParam = "page-size=" + pageSize + "&";
+    var startIndexParam = "start-index=" + startIndex + "&";
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +
-               "/defects?" + queryParam + fieldsParam;
+               "/defects?" + queryParam + fieldsParam + pageSizeParam + startIndexParam;
     ALM.ajax(path, function onSuccess(defectsJSON) {
         var defectsCount = defectsJSON.TotalResults;
         var defects = convertFields(defectsJSON.Entity);

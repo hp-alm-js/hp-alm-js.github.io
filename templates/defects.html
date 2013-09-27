@@ -25,6 +25,11 @@
             ng-options="status for status in statuses">
     </select><br/>
 
+    <label for="status">Type</label>
+    <select name="status" class="form-control" multiple ng-model="preset.query['user-43']"
+            ng-options="type for type in issueTypes">
+    </select><br/>
+
     <div class="form-group">
         <label for="query">Query</label>
         <input disabled class="form-control" value="{{preset.query}}"/>

@@ -186,7 +186,8 @@ app.factory('DefectsService', function($q, $rootScope) {
           {value: "121", label: "UCMDB Future Version"},
           {value: "230", label: "DDM Future Version"},
           {value: "", label: "Not set"}
-        ]
+        ],
+        "user-43": ["Defect", "Enhancement"]
       };
       return values[fieldName];
     },
@@ -322,6 +323,7 @@ function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $ro
   $scope.severities = DefectsService.getAvailableValues("severity");
   $scope.statuses = DefectsService.getAvailableValues("status");
   $scope.applies = DefectsService.getAvailableValues("detected-in-rel");
+  $scope.issueTypes = DefectsService.getAvailableValues("user-43");
   $scope.presets = PresetsService.get(CurrentUser);
   $scope.preset = $scope.presets[$routeParams.preset_name];
   $scope.query = JSON.stringify($scope.preset.query);

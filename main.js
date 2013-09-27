@@ -165,6 +165,17 @@ function appCtrl($scope, LoginService, PresetsService) {
 
 app.factory('DefectsService', function($q, $rootScope) {
   return {
+    getAvailableValues: function getAvailableValues(fieldName) {
+      var values = {
+        "status": ["New", "Open", "Fixed", "Closed", "Deferred",
+                     "Duplicate", "Closed - No Change"],
+        "severity": ["1 - Urgent", "2 - High", "3 - Medium", "4 - Low"],
+        "detected-in-rel": [{value: "404", label: "DDM Content Pack 13.00"},
+                    {value: "403", label: "DDM Content Pack 12.00"},
+                            {value:"", label: "Not set"}]
+      };
+      return values[fieldName];
+    },
     getDefects: function getDefects(query) {
       var deferred = $q.defer(),
           queryString = "",
@@ -294,9 +305,9 @@ var _getFullName = function(name, users) {
 };
 
 function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $routeParams) {
-  $scope.severities = ["1 - Urgent", "2 - High", "3 - Medium", "4 - Low"];
-  $scope.statuses = ["New", "Open", "Fixed", "Closed", "Deferred",
-                     "Duplicate", "Closed - No Change"];
+  $scope.severities = DefectsService.getAvailableValues("severity");
+  $scope.statuses = DefectsService.getAvailableValues("status");
+  $scope.applies = DefectsService.getAvailableValues("detected-in-rel");
   $scope.presets = PresetsService.get(CurrentUser);
   $scope.preset = $scope.presets[$routeParams.preset_name];
   $scope.query = JSON.stringify($scope.preset.query);

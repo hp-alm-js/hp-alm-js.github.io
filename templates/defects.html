@@ -13,6 +13,13 @@
     <select name="severity" class="form-control" multiple ng-model="preset.query.severity"
             ng-options="severity for severity in severities">
     </select><br/>
+
+    <label for="appliesTo">Target release (Applies to)</label>
+    <select name="appliesTo" class="form-control" multiple ng-model="preset.query['detected-in-rel']"
+            ng-options="appliesTo.value as appliesTo.label for appliesTo in applies">
+    </select><br/>
+
+
     <label for="status">Status</label>
     <select name="status" class="form-control" multiple ng-model="preset.query.status"
             ng-options="status for status in statuses">

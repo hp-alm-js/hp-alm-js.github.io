@@ -176,6 +176,7 @@ app.factory('DefectsService', function($q, $rootScope) {
           {value: "403", label: "DDM Content Pack 12.00"},
           {value: "219", label: "DDM Content Pack 11.0"},
           {value: "164", label: "DDM Content Pack 7.0"},
+          {value: "240", label: "UCMDB 10.01"},
           {value: "429", label: "UDC 1.0"},
           {value: "121", label: "UCMDB Future Version"},
           {value: "230", label: "DDM Future Version"},

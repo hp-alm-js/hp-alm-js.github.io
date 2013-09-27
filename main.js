@@ -170,9 +170,17 @@ app.factory('DefectsService', function($q, $rootScope) {
         "status": ["New", "Open", "Fixed", "Closed", "Deferred",
                      "Duplicate", "Closed - No Change"],
         "severity": ["1 - Urgent", "2 - High", "3 - Medium", "4 - Low"],
-        "detected-in-rel": [{value: "404", label: "DDM Content Pack 13.00"},
-                    {value: "403", label: "DDM Content Pack 12.00"},
-                            {value:"", label: "Not set"}]
+        "detected-in-rel": [
+          {value: "440", label: "DDM Content Pack 14.00"},
+          {value: "404", label: "DDM Content Pack 13.00"},
+          {value: "403", label: "DDM Content Pack 12.00"},
+          {value: "219", label: "DDM Content Pack 11.0"},
+          {value: "164", label: "DDM Content Pack 7.0"},
+          {value: "429", label: "UDC 1.0"},
+          {value: "121", label: "UCMDB Future Version"},
+          {value: "230", label: "DDM Future Version"},
+          {value: "", label: "Not set"}
+        ]
       };
       return values[fieldName];
     },

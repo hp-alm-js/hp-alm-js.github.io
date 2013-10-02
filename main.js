@@ -222,7 +222,13 @@ app.factory('DefectsService', function($q, $rootScope) {
           queryString = 'id["' + id + '"]',
           fields = ["id","name","description","dev-comments",
                     "severity","attachment","detection-version",
-                    "user-69", "creation-time","owner", "detected-by"];
+                    "user-46",
+                    "user-63",
+                    "user-69",
+                    "creation-time",
+                    "owner",
+                    "detected-by",
+                    "status"];
       ALM.getDefects(function onSuccess(defects, totalCount) {
                        $rootScope.$apply(function() {
                          deferred.resolve(defects[0]);
@@ -356,6 +362,7 @@ function defect($scope, DefectsService, Users, $routeParams) {
     $scope.defect = defect;
     $scope.last_saved_defect = angular.copy(defect);
     $scope.users = Users;
+    $scope.statuses = DefectsService.getAvailableValues("status");
     $scope.filterUsers = function (user) {
         if(!$scope.filter) {return true;}
         //if (user.name == $scope.defect.owner) {return true;}

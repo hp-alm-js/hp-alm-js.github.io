@@ -33,7 +33,20 @@
         </div>
 
     </div>
-
+    <div class="box">
+        <div class="box-label">Status</div>
+        <select name="status" class="form-control" ng-model="defect.status"
+                ng-options="status for status in statuses">
+        </select>
+    </div>
+    <div class="box" ng-show="defect.status == 'Fixed'">
+        <div class="box-label">Fixed in build</div>
+        <input type=number step="1" class="form-control" ng-model="defect['user-46']" />
+    </div>
+    <div class="box">
+        <div class="box-label">Resolution note</div>
+        <div contenteditable="true" ng-model="defect['user-63']"></div>
+    </div>
     <div  class="box" ng-show="attachments">
         <div class="box-label">Defect Attachments</div>
         <li ng-repeat="attachment in attachments">

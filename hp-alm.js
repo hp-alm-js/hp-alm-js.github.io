@@ -3,6 +3,7 @@
 var API_URL = "";
 var DOMAIN = "";
 var PROJECT = "";
+var LOGIN_FORM = "login-form-required=y&";
 var ALM = {};
 window.ALM = ALM;
 
@@ -50,7 +51,7 @@ ALM.login = function (username, password, onSuccess, onError) {
 }
 
 ALM.tryLogin = function tryLogin(onLogin, onError) {
-    ALM.ajax("rest/is-authenticated?login-form-required=y", function(response) {
+    ALM.ajax("rest/is-authenticated?" + LOGIN_FORM, function(response) {
         onLogin(response.Username);
     },
     function(err) {
@@ -118,7 +119,7 @@ ALM.getDefectAttachments = function getDefectAttachments(defectId, cb, errCb) {
 ALM.getUsers = function getUsers(cb, errCb) {
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +
-               "/customization/users";
+               "/customization/users?" + LOGIN_FORM;
     ALM.ajax(path, function onSuccess(usersJSON) {
         var users = usersJSON.User.map(function(el) {
             return {
@@ -151,7 +152,8 @@ ALM.getDefects = function getDefects(cb, errCb, query, fields, pageSize, startIn
     var startIndexParam = "start-index=" + startIndex + "&";
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +
-               "/defects?" + queryParam + fieldsParam + pageSizeParam + startIndexParam;
+               "/defects?" + queryParam + fieldsParam + pageSizeParam +
+               startIndexParam + LOGIN_FORM;
     ALM.ajax(path, function onSuccess(defectsJSON) {
         var defectsCount = defectsJSON.TotalResults;
         var defects = convertFields(defectsJSON.Entity);

@@ -86,7 +86,9 @@ app.factory('UsersService', function($q, $rootScope) {
   return {
     getUsers: function getUsers(username, password) {
       var deferred = $q.defer();
+      console.log('loading users');
       ALM.getUsers(function cb(users) {
+        console.log('loaded users');
           $rootScope.$apply(function () {deferred.resolve(users)});
         }, function onError() {
           $rootScope.$apply(function () {deferred.resolve([])});
@@ -132,7 +134,7 @@ app.factory('LoginService', function($q, $rootScope) {
   };
 });
 
-function appCtrl($scope, LoginService, PresetsService) {
+function appCtrl($scope, $route, LoginService, PresetsService) {
   $scope.loading = true;
   ALM.config("http://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
   // login function
@@ -144,6 +146,7 @@ function appCtrl($scope, LoginService, PresetsService) {
         $scope.currentUser = user;
         $scope.loading = false;
         $('#login_form')[0].submit(); // submit to hidden frame
+        $route.reload(); // reload; logging in influence other controllers
       });
     });
   }

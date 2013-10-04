@@ -3,7 +3,11 @@ var app = angular.module('AlmUi', ['$strap.directives']);
 app.
   config(['$routeProvider', function($routeProvider) {
   $routeProvider.
-      when('/', {}).
+      when('/', {
+        redirectTo: function () {
+          return "/home";
+        }
+      }).
       when('/home', {templateUrl: 'templates/hello.html', controller: HomeCtrl,}).
       when('/defects/:preset_name', {templateUrl: 'templates/defects.html',
                              controller: defects
@@ -198,7 +202,10 @@ app.factory('DefectsService', function($q, $rootScope) {
                          deferred.resolve({defects: defects, totalCount: totalCount});
                        });
                      }, function onError() {
-                       deferred.reject();
+                       $rootScope.$apply(function() {
+                         $rootScope.$broadcast('APIError', 'error while loading defects');
+                         deferred.reject('error');
+                       });
                      },
                      queryString, fields);
       return deferred.promise;
@@ -345,7 +352,7 @@ var defectsWithUsers = function defectsWithUsers($scope, currentUser, Users, Pre
       $scope.loading = false;
       $scope.defects = defects.defects;
       $scope.totalCount = defects.totalCount;
-    }, function onError() {
+    }, function onError(error) {
       $scope.loading = false;
     });
   }

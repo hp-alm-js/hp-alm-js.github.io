@@ -105,7 +105,7 @@ function convertFields(entities) {
 ALM.getDefectAttachments = function getDefectAttachments(defectId, cb, errCb) {
     var path = "rest/domains/" + DOMAIN +
                "/projects/" + PROJECT +
-               "/defects/" + defectId + "/attachments";
+               "/defects/" + defectId + "/attachments?" + LOGIN_FORM;
     ALM.ajax(path, function onSuccess(attachmentsJSON) {
         var attachments = convertFields(attachmentsJSON.Entity);
         var buildAttachmentUrl = function(attachment) {
@@ -113,7 +113,7 @@ ALM.getDefectAttachments = function getDefectAttachments(defectId, cb, errCb) {
         }
         attachments.map(buildAttachmentUrl);
         cb(attachments);
-    });
+    }, errCb);
 }
 
 ALM.getUsers = function getUsers(cb, errCb) {
@@ -130,7 +130,7 @@ ALM.getUsers = function getUsers(cb, errCb) {
             };
         })
         cb(users);
-    });
+    }, errCb);
 }
 
 ALM.getDefects = function getDefects(cb, errCb, query, fields, pageSize, startIndex) {

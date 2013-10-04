@@ -2,24 +2,14 @@ var app = angular.module('AlmUi', ['$strap.directives']);
 
 app.
   config(['$routeProvider', function($routeProvider) {
-  var resolve = {
-    'CurrentUser':function(LoginService){
-      return LoginService.checkLogin();
-    },
-    'Users': function(UsersService) {
-      return UsersService.getUsers();
-    }
-  };
   $routeProvider.
       when('/', {}).
       when('/home', {templateUrl: 'templates/hello.html', controller: HomeCtrl,}).
       when('/defects/:preset_name', {templateUrl: 'templates/defects.html',
-                             controller: defects,
-                             resolve:resolve
+                             controller: defects
                             }).
       when('/defect/:defect_id', {templateUrl: 'templates/defect.html',
-                                  controller: defect,
-                                  resolve:resolve
+                                  controller: defect
                                  })
 }]);
 
@@ -59,40 +49,20 @@ app.directive('contenteditable', function() {
 
 function HomeCtrl($scope) {}
 
-function RouteCtrl($scope, $route, $location) {
-  if (['', '/'].indexOf($location.path()) != -1) {
-    $location.path("/home");
-  }
-  var assignRouteVisible = function() {
-    var path = $location.path(),
-        routes = Object.keys($route.routes),
-        buildRouteVisible = function(path) {
-        return path.replace('/', '') + "Visible";
-    };
-    routes.map(function(el) {
-       var routeVisible = buildRouteVisible(el);
-       $scope[routeVisible] = false;
-    });
-    var routeVisible = buildRouteVisible(path);
-    if(routes.indexOf(path) != -1) {
-       $scope[routeVisible] = true;
-    }
-  };
-  $scope.$on('$routeChangeSuccess', assignRouteVisible);
-  assignRouteVisible();
-}
 
 app.factory('UsersService', function($q, $rootScope) {
   return {
     getUsers: function getUsers(username, password) {
       var deferred = $q.defer();
-      console.log('loading users');
+      $rootScope.$broadcast('Loading');
       ALM.getUsers(function cb(users) {
         console.log('loaded users');
-          $rootScope.$apply(function () {deferred.resolve(users)});
-        }, function onError() {
-          $rootScope.$apply(function () {deferred.resolve([])});
-        });
+        $rootScope.$apply(function () {deferred.resolve(users)});
+      }, function onError(error) {
+        console.log('users loading error');
+        $rootScope.$apply(function () {deferred.reject()});
+        $rootScope.$broadcast('APIError', error);
+      });
       return deferred.promise;
     },
   };
@@ -105,8 +75,7 @@ app.factory('LoginService', function($q, $rootScope) {
       $('#login_error').hide();
       $rootScope.$apply(function () {deferred.resolve(username)});
     }, function onError(error) {
-      console.log(error);
-      $rootScope.$apply(function () {deferred.resolve(null)});
+      $rootScope.$apply(function () {deferred.reject("error")});
     });
     return deferred.promise;
   },
@@ -134,7 +103,18 @@ app.factory('LoginService', function($q, $rootScope) {
   };
 });
 
-function appCtrl($scope, $route, LoginService, PresetsService) {
+function appCtrl($scope, $route, LoginService, PresetsService, $location) {
+  var onLoggedIn = function (currentUser) {
+    console.log("Logged in");
+    $scope.loading = false;
+    $scope.presets = PresetsService.get(currentUser);
+  },
+      onLoggedOut = function (error) {
+        console.log("Logged out");
+        $scope.currentUser = null;
+        $scope.presets = PresetsService.get($scope.currentUser);
+        $scope.loading = false;
+      };
   $scope.loading = true;
   ALM.config("http://qc2d.atlanta.hp.com/qcbin/", "BTO", "ETG");
   // login function
@@ -142,12 +122,13 @@ function appCtrl($scope, $route, LoginService, PresetsService) {
     var username = $('#username').val(),
         password = $('#password').val();
     LoginService.login(username, password).then(function() {
-      LoginService.checkLogin().then(function(user) {
-        $scope.currentUser = user;
-        $scope.loading = false;
+      $scope.currentUser = LoginService.checkLogin();
+      $scope.currentUser.then(function(user) {
+        onLoggedIn(user);
         $('#login_form')[0].submit(); // submit to hidden frame
-        $route.reload(); // reload; logging in influence other controllers
-      });
+        // dirty hack to trigger other controllers to make additional AJAX request.
+        $route.reload();
+      }, onLoggedOut);
     });
   }
   // logout function
@@ -158,12 +139,15 @@ function appCtrl($scope, $route, LoginService, PresetsService) {
       $('#login_container').css('display', 'block');
     });
   }
-  // bind current user
-  LoginService.checkLogin().then(function(user) {
-    $scope.currentUser = user;
-    $scope.loading = false;
+  var checkLogin = function () {
+    $scope.currentUser = LoginService.checkLogin();
+    $scope.currentUser.then(onLoggedIn, onLoggedOut);
+  };
+  // initial check login
+  checkLogin();
+  $scope.$on('APIError', function(event, error) {
+    checkLogin();
   });
-  $scope.presets = PresetsService.get($scope.currentUser);
 };
 
 app.factory('DefectsService', function($q, $rootScope) {
@@ -214,7 +198,7 @@ app.factory('DefectsService', function($q, $rootScope) {
                          deferred.resolve({defects: defects, totalCount: totalCount});
                        });
                      }, function onError() {
-                       console.log('error')
+                       deferred.reject();
                      },
                      queryString, fields);
       return deferred.promise;
@@ -237,7 +221,7 @@ app.factory('DefectsService', function($q, $rootScope) {
                          deferred.resolve(defects[0]);
                        });
                      }, function onError() {
-                       console.log('error')
+                       deferred.reject();
                      },
                      queryString, fields);
       return deferred.promise;
@@ -250,7 +234,7 @@ app.factory('DefectsService', function($q, $rootScope) {
           deferred.resolve(attachments);
         });
       }, function onError() {
-        console.log('error')
+        deferred.reject();
       });
       return deferred.promise;
     },
@@ -287,10 +271,9 @@ var savePresetsToStorage = function(presets) {
 
 
 app.factory('PresetsService', function($q, $rootScope) {
-  var presets = null;
   return {
     get: function(currentUser) {
-      presets = {
+      var presets = {
         my: {
           id: "my",
           header: "My defects",
@@ -313,7 +296,6 @@ app.factory('PresetsService', function($q, $rootScope) {
       return presets;
     },
     save: function(newPresets) {
-      presets = newPresets;
       savePresetsToStorage(newPresets);
     }
   };
@@ -328,12 +310,31 @@ var _getFullName = function(name, users) {
   }
 };
 
-function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $routeParams) {
+function defects($scope, UsersService, PresetsService, DefectsService, $routeParams) {
+  $scope.loading = true;
+  $scope.$parent.currentUser.then(function(currentUser) {
+    UsersService.getUsers().then(function onUsers(users) {
+      $scope.loading = false;
+      defectsWithUsers($scope, currentUser, users,
+                       PresetsService, DefectsService, $routeParams);
+    }, function onError() {});
+  });
+}
+
+function defect($scope, UsersService, DefectsService, UsersService, $routeParams) {
+  $scope.loading = true;
+  UsersService.getUsers().then(function onUsers(users) {
+    $scope.loading = false;
+    defectWithUsers($scope, users, DefectsService, UsersService, $routeParams);
+  }, function onError() {});
+}
+
+var defectsWithUsers = function defectsWithUsers($scope, currentUser, Users, PresetsService, DefectsService, $routeParams) {
   $scope.severities = DefectsService.getAvailableValues("severity");
   $scope.statuses = DefectsService.getAvailableValues("status");
   $scope.applies = DefectsService.getAvailableValues("detected-in-rel");
   $scope.issueTypes = DefectsService.getAvailableValues("user-43");
-  $scope.presets = PresetsService.get(CurrentUser);
+  $scope.presets = PresetsService.get(currentUser);
   $scope.preset = $scope.presets[$routeParams.preset_name];
   $scope.query = JSON.stringify($scope.preset.query);
   $scope.getFullName = function (name) {return _getFullName(name, Users);}
@@ -344,6 +345,8 @@ function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $ro
       $scope.loading = false;
       $scope.defects = defects.defects;
       $scope.totalCount = defects.totalCount;
+    }, function onError() {
+      $scope.loading = false;
     });
   }
   $scope.editPreset = function() {
@@ -355,10 +358,9 @@ function defects($scope, CurrentUser, Users, PresetsService, DefectsService, $ro
     $scope.refresh();
   }
   $scope.refresh();
-
 }
 
-function defect($scope, DefectsService, Users, $routeParams) {
+function defectWithUsers($scope, Users, DefectsService, UsersService, $routeParams) {
   $scope.loading = true;
   DefectsService.getDefect({id: $routeParams.defect_id}).then(function(defect) {
     $scope.loading = false;

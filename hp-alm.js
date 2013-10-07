@@ -89,6 +89,9 @@ function convertFields(entities) {
   }
 
   function escapeXml (s) {
+    if (typeof s === "number") {
+      return s;
+    }
     var XML_CHAR_MAP = {
       '<': '&lt;',
       '>': '&gt;',
